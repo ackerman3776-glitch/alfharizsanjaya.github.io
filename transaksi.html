@@ -3,151 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transaksi - Toko Sepatu Alfhariz</title>
+    <title>Checkout - Toko Sepatu Alfhariz</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* CSS KHUSUS HALAMAN TRANSAKSI */
-        body {
-            background-color: #f4f4f4;
-            font-family: 'Arial', sans-serif;
+        /* CSS RESET & GENERAL */
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        
+        /* LAYOUT UTAMA */
+        .checkout-container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            gap: 30px;
         }
 
-        .transaksi-container {
-            max-width: 800px;
-            margin: 50px auto;
+        .left-column { flex: 2; min-width: 300px; }
+        .right-column { flex: 1; min-width: 300px; }
+
+        /* KARTU PUTIH */
+        .card {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .form-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 20px;
-        }
-
-        .form-group {
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 25px;
             margin-bottom: 20px;
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-        }
+        .card h3 { margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 15px; }
 
+        /* FORM STYLING */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+        
         input, select, textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box; /* Agar padding tidak melebarkan elemen */
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus, textarea:focus { border-color: #27ae60; outline: none; }
+
+        /* RINGKASAN PESANAN (STICKY) */
+        .summary-box {
+            position: sticky;
+            top: 20px;
         }
 
-        .btn-order {
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #eee;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        /* TOMBOL BELI */
+        .btn-checkout {
             width: 100%;
             padding: 15px;
-            background: #27ae60; /* Warna Hijau */
+            background: #27ae60;
             color: white;
             border: none;
-            font-size: 18px;
+            border-radius: 8px;
+            font-size: 1.1rem;
             font-weight: bold;
-            border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s;
+            margin-top: 20px;
         }
+        .btn-checkout:hover { background: #219150; }
 
-        .btn-order:hover {
-            background: #219150;
-        }
-
-        /* ESTIMASI HARGA */
-        #total-price-display {
-            text-align: right;
-            font-size: 1.5rem;
-            color: #e74c3c;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        /* --- MODAL (POPUP KONFIRMASI) --- */
+        /* --- MODAL PEMBAYARAN (POPUP) --- */
         .modal {
-            display: none; /* Tersembunyi secara default */
+            display: none;
             position: fixed;
-            z-index: 999;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.6); /* Latar gelap transparan */
+            background-color: rgba(0,0,0,0.7);
             align-items: center;
             justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
+        .modal.show { opacity: 1; }
 
         .modal-content {
             background-color: white;
-            padding: 30px;
-            border-radius: 10px;
             width: 90%;
             max-width: 500px;
-            text-align: center;
-            position: relative;
-            animation: slideDown 0.4s ease;
+            border-radius: 15px;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+        .modal.show .modal-content { transform: translateY(0); }
+
+        .modal-header {
+            background: #27ae60;
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        @keyframes slideDown {
-            from {transform: translateY(-50px); opacity: 0;}
-            to {transform: translateY(0); opacity: 1;}
-        }
+        .close-modal { cursor: pointer; font-size: 24px; }
 
-        .modal h2 {
-            color: #27ae60;
-            margin-bottom: 20px;
-        }
+        .modal-body { padding: 20px; }
 
-        .summary-list {
-            text-align: left;
+        /* PILIHAN PEMBAYARAN */
+        .payment-option {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .payment-option:hover, .payment-option.active {
+            border-color: #27ae60;
+            background-color: #f0fdf4;
+        }
+        .payment-logo { font-size: 24px; color: #555; width: 30px; text-align: center; }
+
+        /* DETAIL REKENING (Hidden by default) */
+        .payment-details {
+            display: none;
             background: #f9f9f9;
             padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #27ae60;
         }
-
-        .summary-list p {
-            margin: 8px 0;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-
-        .btn-final-wa {
-            background-color: #25D366; /* Warna WA */
-            color: white;
-            padding: 12px 25px;
+        .copy-btn {
+            background: #ddd;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 4px;
             cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .btn-confirm {
+            width: 100%;
+            background: #25D366; /* WA Color */
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         
-        .btn-cancel {
-            background-color: #e74c3c;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-
     </style>
 </head>
 <body>
@@ -158,187 +194,265 @@
         <a href="tentang.html" style="color: white; margin: 0 15px; text-decoration: none;">Tentang</a>
     </nav>
 
-    <div class="transaksi-container">
-        <div class="form-header">
-            <h2>Formulir Pemesanan</h2>
-            <p>Lengkapi data di bawah ini untuk menyelesaikan pesanan.</p>
+    <div class="checkout-container">
+        <div class="left-column">
+            <div class="card">
+                <h3><i class="fas fa-user-circle"></i> Informasi Pengiriman</h3>
+                <form id="checkoutForm">
+                    <div class="form-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" id="nama" placeholder="Masukan nama penerima" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nomor WhatsApp (Aktif)</label>
+                        <input type="tel" id="no_hp" placeholder="Contoh: 081234567890" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat Lengkap</label>
+                        <textarea id="alamat" rows="3" placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota" required></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-shopping-bag"></i> Detail Produk</h3>
+                <div class="form-group">
+                    <label>Pilih Model Sepatu</label>
+                    <select id="produk" onchange="updateHarga()">
+                        <option value="" data-harga="0">-- Pilih Produk --</option>
+                        <option value="Puma Sport" data-harga="2450000">Puma Sport - Rp 2.450.000</option>
+                        <option value="Adidas Samba" data-harga="3380000">Adidas Samba - Rp 3.380.000</option>
+                        <option value="Nike Air Force 1" data-harga="1520000">Nike Air Force 1 - Rp 1.520.000</option>
+                        <option value="Converse" data-harga="2410000">Converse - Rp 2.410.000</option>
+                        <option value="New Balance" data-harga="4600000">New Balance - Rp 4.600.000</option>
+                        <option value="GUCCI Luxury" data-harga="93300000">GUCCI Luxury - Rp 93.300.000</option>
+                    </select>
+                </div>
+                <div class="row" style="display: flex; gap: 20px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Ukuran</label>
+                        <select id="ukuran">
+                            <option value="39">39</option>
+                            <option value="40">40</option>
+                            <option value="41">41</option>
+                            <option value="42">42</option>
+                            <option value="43">43</option>
+                            <option value="44">44</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Jumlah</label>
+                        <input type="number" id="jumlah" value="1" min="1" onchange="updateHarga()" onkeyup="updateHarga()">
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <form id="orderForm" onsubmit="event.preventDefault(); tampilkanModal();">
-            
-            <div class="form-group">
-                <label for="produk"><i class="fas fa-shoe-prints"></i> Pilih Model Sepatu:</label>
-                <select id="produk" required onchange="hitungTotal()">
-                    <option value="" data-harga="0">-- Pilih Sepatu --</option>
-                    <option value="Puma Sport" data-harga="2450000">Puma Sport - Rp2.450.000</option>
-                    <option value="Adidas Samba" data-harga="3380000">Adidas Samba - Rp3.380.000</option>
-                    <option value="Nike Air Force 1" data-harga="1520000">Nike Air Force 1 - Rp1.520.000</option>
-                    <option value="Converse" data-harga="2410000">Converse - Rp2.410.000</option>
-                    <option value="New Balance" data-harga="4600000">New Balance - Rp4.600.000</option>
-                    <option value="Gucci Luxury" data-harga="93300000">GUCCI Luxury - Rp93.300.000</option>
-                </select>
-            </div>
+        <div class="right-column">
+            <div class="card summary-box">
+                <h3>Ringkasan Belanja</h3>
+                <div class="price-row">
+                    <span>Harga Barang</span>
+                    <span id="display-harga">Rp 0</span>
+                </div>
+                <div class="price-row">
+                    <span>Biaya Layanan</span>
+                    <span>Rp 2.000</span>
+                </div>
+                <div class="price-row">
+                    <span>Ongkos Kirim</span>
+                    <span style="color: #27ae60;">Gratis</span>
+                </div>
+                <div class="total-row">
+                    <span>Total Tagihan</span>
+                    <span id="display-total">Rp 0</span>
+                </div>
 
-            <div class="form-group">
-                <label for="ukuran"><i class="fas fa-ruler"></i> Ukuran (Size):</label>
-                <select id="ukuran" required>
-                    <option value="">-- Pilih Ukuran --</option>
-                    <option value="39">39</option>
-                    <option value="40">40</option>
-                    <option value="41">41</option>
-                    <option value="42">42</option>
-                    <option value="43">43</option>
-                    <option value="44">44</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="jumlah"><i class="fas fa-sort-numeric-up"></i> Jumlah Pasang:</label>
-                <input type="number" id="jumlah" min="1" value="1" required onchange="hitungTotal()" onkeyup="hitungTotal()">
-            </div>
-
-            <div class="form-group">
-                <label>Total Pembayaran:</label>
-                <div id="total-price-display">Rp 0</div>
-            </div>
-
-            <hr>
-
-            <div class="form-group">
-                <label for="nama"><i class="fas fa-user"></i> Nama Lengkap:</label>
-                <input type="text" id="nama" placeholder="Contoh: Alfhariz Sanjaya" required>
-            </div>
-
-            <div class="form-group">
-                <label for="no_hp"><i class="fas fa-phone"></i> Nomor WhatsApp:</label>
-                <input type="tel" id="no_hp" placeholder="Contoh: 0812xxxx" required>
-            </div>
-
-            <div class="form-group">
-                <label for="alamat"><i class="fas fa-map-marker-alt"></i> Alamat Pengiriman Lengkap:</label>
-                <textarea id="alamat" rows="4" placeholder="Jalan, RT/RW, Kecamatan, Kota..." required></textarea>
-            </div>
-
-            <button type="submit" class="btn-order">
-                <i class="fas fa-paper-plane"></i> Lanjut ke Pembayaran
-            </button>
-        </form>
-    </div>
-
-    <div id="confirmationModal" class="modal">
-        <div class="modal-content">
-            <i class="fas fa-check-circle" style="font-size: 60px; color: #27ae60; margin-bottom: 20px;"></i>
-            <h2>Konfirmasi Pesanan</h2>
-            <p>Mohon periksa kembali data pesanan Anda:</p>
-            
-            <div class="summary-list">
-                <p><strong>Nama:</strong> <span id="summary-nama"></span></p>
-                <p><strong>Produk:</strong> <span id="summary-produk"></span></p>
-                <p><strong>Ukuran:</strong> <span id="summary-ukuran"></span></p>
-                <p><strong>Jumlah:</strong> <span id="summary-jumlah"></span></p>
-                <p><strong>Alamat:</strong> <span id="summary-alamat"></span></p>
-                <p style="font-size: 1.2rem; color: #e74c3c; border: none; margin-top: 10px;">
-                    <strong>Total: <span id="summary-total"></span></strong>
+                <button type="button" class="btn-checkout" onclick="bukaModalPembayaran()">
+                    Pilih Pembayaran <i class="fas fa-arrow-right"></i>
+                </button>
+                <p style="font-size: 12px; color: #888; text-align: center; margin-top: 10px;">
+                    <i class="fas fa-shield-alt"></i> Transaksi Aman & Terpercaya
                 </p>
             </div>
-
-            <p style="font-size: 0.8rem; color: #777; margin-bottom: 20px;">
-                Klik tombol di bawah untuk mengirim format pesanan ke WhatsApp Admin kami.
-            </p>
-
-            <button class="btn-cancel" onclick="tutupModal()">Edit Data</button>
-            <a href="#" id="wa-link" target="_blank" class="btn-final-wa">
-                <i class="fab fa-whatsapp"></i> Kirim Pesanan Sekarang
-            </a>
         </div>
     </div>
 
-    <footer style="text-align: center; padding: 20px; color: #777; font-size: 14px; margin-top: 30px;">
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Pilih Metode Pembayaran</span>
+                <span class="close-modal" onclick="tutupModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 15px;">Silakan pilih metode pembayaran untuk menyelesaikan pesanan:</p>
+                
+                <div class="payment-option" onclick="pilihMetode(this, 'bank')">
+                    <i class="fas fa-university payment-logo"></i>
+                    <div>
+                        <strong>Transfer Bank (BCA/BRI/Mandiri)</strong><br>
+                        <small>Verifikasi Manual</small>
+                    </div>
+                </div>
+
+                <div class="payment-option" onclick="pilihMetode(this, 'ewallet')">
+                    <i class="fas fa-wallet payment-logo"></i>
+                    <div>
+                        <strong>E-Wallet (Dana/OVO/Gopay)</strong><br>
+                        <small>Scan QR Code</small>
+                    </div>
+                </div>
+
+                <div class="payment-option" onclick="pilihMetode(this, 'cod')">
+                    <i class="fas fa-hand-holding-usd payment-logo"></i>
+                    <div>
+                        <strong>COD (Bayar di Tempat)</strong><br>
+                        <small>Bayar saat kurir datang</small>
+                    </div>
+                </div>
+
+                <div id="payment-details" class="payment-details">
+                    <p id="detail-text"></p>
+                </div>
+
+                <button id="btn-final" class="btn-confirm" onclick="kirimPesanan()" style="display: none;">
+                    <i class="fab fa-whatsapp"></i> Konfirmasi Pesanan Saya
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; color: #999; font-size: 14px;">
         &copy; 2025 Toko Sepatu Alfhariz
     </footer>
 
     <script>
-        // 1. Format Rupiah
-        const formatRupiah = (number) => {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(number);
+        let totalHargaGlobal = 0;
+        let metodeBayarGlobal = "";
+
+        // 1. FORMAT RUPIAH
+        const formatRupiah = (num) => {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
         }
 
-        // 2. Hitung Total Otomatis Saat Input Berubah
-        function hitungTotal() {
+        // 2. HITUNG OTOMATIS (Live Calculation)
+        function updateHarga() {
             const selectProduk = document.getElementById('produk');
             const inputJumlah = document.getElementById('jumlah');
             
-            // Ambil harga dari atribut data-harga di <option>
-            const hargaSatuan = selectProduk.options[selectProduk.selectedIndex].getAttribute('data-harga') || 0;
-            const jumlah = inputJumlah.value;
+            const hargaSatuan = parseFloat(selectProduk.options[selectProduk.selectedIndex].getAttribute('data-harga')) || 0;
+            const jumlah = parseInt(inputJumlah.value) || 1;
             
-            const total = hargaSatuan * jumlah;
-            
-            // Tampilkan ke layar
-            document.getElementById('total-price-display').innerText = formatRupiah(total);
-            return total; // Mengembalikan nilai untuk dipakai nanti
+            const subtotal = hargaSatuan * jumlah;
+            const biayaLayanan = 2000;
+            const total = subtotal + biayaLayanan;
+
+            // Simpan ke variabel global
+            totalHargaGlobal = total;
+
+            // Update Tampilan
+            document.getElementById('display-harga').innerText = formatRupiah(subtotal);
+            document.getElementById('display-total').innerText = (subtotal > 0) ? formatRupiah(total) : "Rp 0";
         }
 
-        // 3. Tampilkan Modal Konfirmasi (Langkah 'Selesai')
-        function tampilkanModal() {
-            // Ambil semua nilai
+        // 3. BUKA MODAL PEMBAYARAN
+        function bukaModalPembayaran() {
+            // Validasi dulu
+            const nama = document.getElementById('nama').value;
+            const alamat = document.getElementById('alamat').value;
+            const produk = document.getElementById('produk').value;
+
+            if(nama === "" || alamat === "" || produk === "") {
+                alert("Harap lengkapi semua data form terlebih dahulu!");
+                return;
+            }
+
+            // Tampilkan Modal
+            const modal = document.getElementById('paymentModal');
+            modal.style.display = "flex";
+            setTimeout(() => { modal.classList.add('show'); }, 10); // Efek fade in
+        }
+
+        // 4. TUTUP MODAL
+        function tutupModal() {
+            const modal = document.getElementById('paymentModal');
+            modal.classList.remove('show');
+            setTimeout(() => { modal.style.display = "none"; }, 300);
+        }
+
+        // 5. LOGIKA PILIH METODE BAYAR
+        function pilihMetode(element, tipe) {
+            // Reset style pilihan lain
+            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('active'));
+            // Highlight pilihan ini
+            element.classList.add('active');
+
+            const detailBox = document.getElementById('payment-details');
+            const detailText = document.getElementById('detail-text');
+            const btnFinal = document.getElementById('btn-final');
+
+            detailBox.style.display = "block";
+            btnFinal.style.display = "flex";
+            metodeBayarGlobal = tipe;
+
+            // Tampilkan instruksi sesuai pilihan
+            if (tipe === 'bank') {
+                detailText.innerHTML = `
+                    <strong>Silakan transfer ke salah satu rekening:</strong><br><br>
+                    🏦 <strong>BCA:</strong> 123-456-7890 (a.n Alfhariz)<br>
+                    🏦 <strong>BRI:</strong> 0000-01-0000-50-5 (a.n Alfhariz)<br><br>
+                    <em>*Simpan bukti transfer untuk dikirim ke Admin.</em>
+                `;
+            } else if (tipe === 'ewallet') {
+                detailText.innerHTML = `
+                    <strong>Transfer E-Wallet:</strong><br><br>
+                    📱 <strong>DANA/OVO/Gopay:</strong> 0812-3456-7890<br><br>
+                    <em>*Sertakan nama pengirim di berita transfer.</em>
+                `;
+            } else if (tipe === 'cod') {
+                detailText.innerHTML = `
+                    <strong>Bayar di Tempat (COD)</strong><br>
+                    Mohon siapkan uang pas sebesar <strong>${formatRupiah(totalHargaGlobal)}</strong> saat kurir tiba.<br>
+                    Pastikan nomor WA aktif agar kurir bisa menghubungi.
+                `;
+            }
+        }
+
+        // 6. EKSEKUSI AKHIR (KIRIM KE WA)
+        function kirimPesanan() {
             const nama = document.getElementById('nama').value;
             const produk = document.getElementById('produk').value;
             const ukuran = document.getElementById('ukuran').value;
             const jumlah = document.getElementById('jumlah').value;
             const alamat = document.getElementById('alamat').value;
-            const total = hitungTotal(); // Hitung ulang untuk memastikan
-
-            if(total === 0) {
-                alert("Silakan pilih produk terlebih dahulu!");
-                return;
-            }
-
-            // Masukkan data ke dalam Modal (Ringkasan)
-            document.getElementById('summary-nama').innerText = nama;
-            document.getElementById('summary-produk').innerText = produk;
-            document.getElementById('summary-ukuran').innerText = ukuran;
-            document.getElementById('summary-jumlah').innerText = jumlah + " Pasang";
-            document.getElementById('summary-alamat').innerText = alamat;
-            document.getElementById('summary-total').innerText = formatRupiah(total);
-
-            // Buat Link WhatsApp Otomatis
-            // GANTI NOMOR DI BAWAH INI DENGAN NOMOR WA ANDA (628...)
-            const nomorAdmin = "6281234567890"; 
             
-            const pesan = Halo Admin Toko Alfhariz,%0A%0ASaya ingin memesan sepatu:%0A +
-                          --------------------------------%0A +
-                          👤 Nama: ${nama}%0A +
-                          👟 Produk: ${produk}%0A +
-                          📏 Ukuran: ${ukuran}%0A +
-                          📦 Jumlah: ${jumlah}%0A +
-                          💰 Total: ${formatRupiah(total)}%0A +
-                          🏠 Alamat: ${alamat}%0A +
-                          --------------------------------%0A +
-                          Mohon diproses, terima kasih.;
+            // Tentukan label metode
+            let labelMetode = "";
+            if(metodeBayarGlobal === 'bank') labelMetode = "Transfer Bank";
+            else if(metodeBayarGlobal === 'ewallet') labelMetode = "E-Wallet";
+            else labelMetode = "COD (Bayar Ditempat)";
 
-            const linkWA = https://wa.me/${nomorAdmin}?text=${pesan};
-            document.getElementById('wa-link').href = linkWA;
+            // GANTI NOMOR ADMIN DI SINI (Gunakan format 62...)
+            const nomorAdmin = "6281234567890"; 
 
-            // Munculkan Modal
-            document.getElementById('confirmationModal').style.display = "flex";
-        }
-
-        // 4. Tutup Modal
-        function tutupModal() {
-            document.getElementById('confirmationModal').style.display = "none";
-        }
-
-        // Tutup modal jika klik di luar kotak
-        window.onclick = function(event) {
-            const modal = document.getElementById('confirmationModal');
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
+            const pesan = Halo Admin, saya ingin konfirmasi pesanan baru:%0A%0A +
+                          📦 *DETAIL PESANAN* %0A +
+                          Produk: ${produk} %0A +
+                          Ukuran: ${ukuran} %0A +
+                          Jumlah: ${jumlah} Pasang %0A +
+                          ----------------------------------%0A +
+                          👤 *DATA PEMBELI* %0A +
+                          Nama: ${nama} %0A +
+                          Alamat: ${alamat} %0A +
+                          ----------------------------------%0A +
+                          💰 *PEMBAYARAN* %0A +
+                          Total Tagihan: ${formatRupiah(totalHargaGlobal)} %0A +
+                          Metode: ${labelMetode} %0A +
+                          ----------------------------------%0A +
+                          Mohon diproses segera. Terima kasih!;
+            
+            // Buka WhatsApp
+            window.open(https://wa.me/${081322107867}?text=${pesan}, '_blank');
         }
     </script>
 </body>
