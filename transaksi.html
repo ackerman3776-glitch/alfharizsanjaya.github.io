@@ -1,126 +1,345 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Transaksi — Toko Sepatu Alfhariz</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0; padding: 0;
-      /* Ganti dengan path lokal: url('img/owner-bg.jpg') */
-      background: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') no-repeat center center fixed;
-      background-size: cover;
-      color: #333;
-    }
-    .overlay {
-      background: rgba(255,255,255,0.93);
-      min-height: 100vh;
-    }
-    header { background: #222; color: white; padding: 20px; text-align: center; }
-    nav { background: #444; padding: 10px; text-align: center; }
-    nav a { color: white; margin: 0 12px; text-decoration: none; font-weight: bold; }
-    .marquee { background: #ffc107; padding: 8px; text-align: center; font-weight: bold; }
-    .content { padding: 20px; max-width: 700px; margin: 0 auto; }
-    .form-box {
-      background: white; padding: 30px; border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .owner-intro {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-    .owner-intro img {
-      width: 100px; height: 100px; object-fit: cover;
-      border-radius: 50%;
-      border: 4px solid #28a745;
-      margin-bottom: 12px;
-    }
-    input, select, textarea {
-      width: 100%; padding: 12px; margin: 8px 0;
-      border: 1px solid #ccc; border-radius: 6px;
-      box-sizing: border-box;
-    }
-    button {
-      background: #28a745; color: white; padding: 14px;
-      border: none; border-radius: 6px; width: 100%;
-      font-size: 18px; font-weight: bold; cursor: pointer;
-      margin-top: 10px;
-    }
-    button:hover { opacity: 0.9; }
-    footer { background: #222; color: white; text-align: center; padding: 15px; margin-top: 20px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaksi - Toko Sepatu Alfhariz</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* CSS KHUSUS HALAMAN TRANSAKSI */
+        body {
+            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .transaksi-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box; /* Agar padding tidak melebarkan elemen */
+            font-size: 16px;
+        }
+
+        .btn-order {
+            width: 100%;
+            padding: 15px;
+            background: #27ae60; /* Warna Hijau */
+            color: white;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-order:hover {
+            background: #219150;
+        }
+
+        /* ESTIMASI HARGA */
+        #total-price-display {
+            text-align: right;
+            font-size: 1.5rem;
+            color: #e74c3c;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* --- MODAL (POPUP KONFIRMASI) --- */
+        .modal {
+            display: none; /* Tersembunyi secara default */
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6); /* Latar gelap transparan */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown {
+            from {transform: translateY(-50px); opacity: 0;}
+            to {transform: translateY(0); opacity: 1;}
+        }
+
+        .modal h2 {
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+
+        .summary-list {
+            text-align: left;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .summary-list p {
+            margin: 8px 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .btn-final-wa {
+            background-color: #25D366; /* Warna WA */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .btn-cancel {
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+    </style>
 </head>
 <body>
 
-<div class="overlay">
+    <nav style="background: #333; padding: 15px; text-align: center;">
+        <a href="index.html" style="color: white; margin: 0 15px; text-decoration: none;">Beranda</a>
+        <a href="transaksi.html" style="color: #ff6b6b; margin: 0 15px; text-decoration: none; font-weight: bold;">Transaksi</a>
+        <a href="tentang.html" style="color: white; margin: 0 15px; text-decoration: none;">Tentang</a>
+    </nav>
 
-<header>
-  <h1>Form Transaksi</h1>
-</header>
+    <div class="transaksi-container">
+        <div class="form-header">
+            <h2>Formulir Pemesanan</h2>
+            <p>Lengkapi data di bawah ini untuk menyelesaikan pesanan.</p>
+        </div>
 
-<nav>
-  <a href="index.html">Beranda</a>
-  <a href="tentang.html">Tentang</a>
-</nav>
+        <form id="orderForm" onsubmit="event.preventDefault(); tampilkanModal();">
+            
+            <div class="form-group">
+                <label for="produk"><i class="fas fa-shoe-prints"></i> Pilih Model Sepatu:</label>
+                <select id="produk" required onchange="hitungTotal()">
+                    <option value="" data-harga="0">-- Pilih Sepatu --</option>
+                    <option value="Puma Sport" data-harga="2450000">Puma Sport - Rp2.450.000</option>
+                    <option value="Adidas Samba" data-harga="3380000">Adidas Samba - Rp3.380.000</option>
+                    <option value="Nike Air Force 1" data-harga="1520000">Nike Air Force 1 - Rp1.520.000</option>
+                    <option value="Converse" data-harga="2410000">Converse - Rp2.410.000</option>
+                    <option value="New Balance" data-harga="4600000">New Balance - Rp4.600.000</option>
+                    <option value="Gucci Luxury" data-harga="93300000">GUCCI Luxury - Rp93.300.000</option>
+                </select>
+            </div>
 
-<div class="marquee">
-  <marquee behavior="scroll" direction="left">
-    💌 Terima kasih telah mempercayai Toko Sepatu Alfhariz!
-  </marquee>
-</div>
+            <div class="form-group">
+                <label for="ukuran"><i class="fas fa-ruler"></i> Ukuran (Size):</label>
+                <select id="ukuran" required>
+                    <option value="">-- Pilih Ukuran --</option>
+                    <option value="39">39</option>
+                    <option value="40">40</option>
+                    <option value="41">41</option>
+                    <option value="42">42</option>
+                    <option value="43">43</option>
+                    <option value="44">44</option>
+                </select>
+            </div>
 
-<div class="content">
+            <div class="form-group">
+                <label for="jumlah"><i class="fas fa-sort-numeric-up"></i> Jumlah Pasang:</label>
+                <input type="number" id="jumlah" min="1" value="1" required onchange="hitungTotal()" onkeyup="hitungTotal()">
+            </div>
 
-  <div class="owner-intro">
-    <h2>Selamat berbelanja</h2>
-    <p>Saya akan memastikan pesanan Anda diproses cepat & aman ❤️</p>
-  </div>
+            <div class="form-group">
+                <label>Total Pembayaran:</label>
+                <div id="total-price-display">Rp 0</div>
+            </div>
 
-  <div class="form-box">
-    <h2>Lengkapi Data Pemesanan</h2>
+            <hr>
 
-    <form>
-      <label>Nama Lengkap:</label>
-      <input type="text" required placeholder="Contoh: Budi Santoso">
+            <div class="form-group">
+                <label for="nama"><i class="fas fa-user"></i> Nama Lengkap:</label>
+                <input type="text" id="nama" placeholder="Contoh: Alfhariz Sanjaya" required>
+            </div>
 
-      <label>Alamat Lengkap (RT/RW, Kel/ Kec, Kota, Provinsi, Kode Pos):</label>
-      <textarea rows="3" required placeholder="Contoh: Jl. Merdeka No. 12, RT02/RW05, Cibeunying, Bandung, Jawa Barat 40112"></textarea>
+            <div class="form-group">
+                <label for="no_hp"><i class="fas fa-phone"></i> Nomor WhatsApp:</label>
+                <input type="tel" id="no_hp" placeholder="Contoh: 0812xxxx" required>
+            </div>
 
-      <label>No. WhatsApp Aktif:</label>
-      <input type="tel" required placeholder="Contoh: 081234567890">
+            <div class="form-group">
+                <label for="alamat"><i class="fas fa-map-marker-alt"></i> Alamat Pengiriman Lengkap:</label>
+                <textarea id="alamat" rows="4" placeholder="Jalan, RT/RW, Kecamatan, Kota..." required></textarea>
+            </div>
 
-      <label>Kurir Pengiriman:</label>
-      <select required>
-        <option value="">— Pilih Kurir —</option>
-        <option>JNE</option>
-        <option>J&T Express</option>
-        <option>SiCepat</option>
-        <option>AnterAja</option>
-      </select>
+            <button type="submit" class="btn-order">
+                <i class="fas fa-paper-plane"></i> Lanjut ke Pembayaran
+            </button>
+        </form>
+    </div>
 
-      <label>Metode Pembayaran:</label>
-      <select required>
-        <option value="">— Pilih Metode —</option>
-        <option>Transfer BCA</option>
-        <option>Transfer BRI</option>
-        <option>Transfer Mandiri</option>
-        <option>QRIS (GoPay/ShopeePay/DANA)</option>
-      </select>
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <i class="fas fa-check-circle" style="font-size: 60px; color: #27ae60; margin-bottom: 20px;"></i>
+            <h2>Konfirmasi Pesanan</h2>
+            <p>Mohon periksa kembali data pesanan Anda:</p>
+            
+            <div class="summary-list">
+                <p><strong>Nama:</strong> <span id="summary-nama"></span></p>
+                <p><strong>Produk:</strong> <span id="summary-produk"></span></p>
+                <p><strong>Ukuran:</strong> <span id="summary-ukuran"></span></p>
+                <p><strong>Jumlah:</strong> <span id="summary-jumlah"></span></p>
+                <p><strong>Alamat:</strong> <span id="summary-alamat"></span></p>
+                <p style="font-size: 1.2rem; color: #e74c3c; border: none; margin-top: 10px;">
+                    <strong>Total: <span id="summary-total"></span></strong>
+                </p>
+            </div>
 
-      <button type="submit">✅ Kirim Pesanan</button>
-    </form>
+            <p style="font-size: 0.8rem; color: #777; margin-bottom: 20px;">
+                Klik tombol di bawah untuk mengirim format pesanan ke WhatsApp Admin kami.
+            </p>
 
-    <p style="margin-top: 20px; font-size: 14px; color: #666;">
-      Setelah mengirim, admin akan konfirmasi via WhatsApp dalam 1x24 jam.
-    </p>
-  </div>
+            <button class="btn-cancel" onclick="tutupModal()">Edit Data</button>
+            <a href="#" id="wa-link" target="_blank" class="btn-final-wa">
+                <i class="fab fa-whatsapp"></i> Kirim Pesanan Sekarang
+            </a>
+        </div>
+    </div>
 
-</div>
+    <footer style="text-align: center; padding: 20px; color: #777; font-size: 14px; margin-top: 30px;">
+        &copy; 2025 Toko Sepatu Alfhariz
+    </footer>
 
-<footer>
-  &copy; 2025 Toko Sepatu Alfhariz 
+    <script>
+        // 1. Format Rupiah
+        const formatRupiah = (number) => {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number);
+        }
 
-</div>
+        // 2. Hitung Total Otomatis Saat Input Berubah
+        function hitungTotal() {
+            const selectProduk = document.getElementById('produk');
+            const inputJumlah = document.getElementById('jumlah');
+            
+            // Ambil harga dari atribut data-harga di <option>
+            const hargaSatuan = selectProduk.options[selectProduk.selectedIndex].getAttribute('data-harga') || 0;
+            const jumlah = inputJumlah.value;
+            
+            const total = hargaSatuan * jumlah;
+            
+            // Tampilkan ke layar
+            document.getElementById('total-price-display').innerText = formatRupiah(total);
+            return total; // Mengembalikan nilai untuk dipakai nanti
+        }
+
+        // 3. Tampilkan Modal Konfirmasi (Langkah 'Selesai')
+        function tampilkanModal() {
+            // Ambil semua nilai
+            const nama = document.getElementById('nama').value;
+            const produk = document.getElementById('produk').value;
+            const ukuran = document.getElementById('ukuran').value;
+            const jumlah = document.getElementById('jumlah').value;
+            const alamat = document.getElementById('alamat').value;
+            const total = hitungTotal(); // Hitung ulang untuk memastikan
+
+            if(total === 0) {
+                alert("Silakan pilih produk terlebih dahulu!");
+                return;
+            }
+
+            // Masukkan data ke dalam Modal (Ringkasan)
+            document.getElementById('summary-nama').innerText = nama;
+            document.getElementById('summary-produk').innerText = produk;
+            document.getElementById('summary-ukuran').innerText = ukuran;
+            document.getElementById('summary-jumlah').innerText = jumlah + " Pasang";
+            document.getElementById('summary-alamat').innerText = alamat;
+            document.getElementById('summary-total').innerText = formatRupiah(total);
+
+            // Buat Link WhatsApp Otomatis
+            // GANTI NOMOR DI BAWAH INI DENGAN NOMOR WA ANDA (628...)
+            const nomorAdmin = "6281234567890"; 
+            
+            const pesan = Halo Admin Toko Alfhariz,%0A%0ASaya ingin memesan sepatu:%0A +
+                          --------------------------------%0A +
+                          👤 Nama: ${nama}%0A +
+                          👟 Produk: ${produk}%0A +
+                          📏 Ukuran: ${ukuran}%0A +
+                          📦 Jumlah: ${jumlah}%0A +
+                          💰 Total: ${formatRupiah(total)}%0A +
+                          🏠 Alamat: ${alamat}%0A +
+                          --------------------------------%0A +
+                          Mohon diproses, terima kasih.;
+
+            const linkWA = https://wa.me/${nomorAdmin}?text=${pesan};
+            document.getElementById('wa-link').href = linkWA;
+
+            // Munculkan Modal
+            document.getElementById('confirmationModal').style.display = "flex";
+        }
+
+        // 4. Tutup Modal
+        function tutupModal() {
+            document.getElementById('confirmationModal').style.display = "none";
+        }
+
+        // Tutup modal jika klik di luar kotak
+        window.onclick = function(event) {
+            const modal = document.getElementById('confirmationModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>
