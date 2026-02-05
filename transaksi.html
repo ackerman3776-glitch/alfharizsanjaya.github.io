@@ -3,463 +3,338 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Toko Sepatu Alfhariz</title>
+    <title>Checkout - Toko Sepatu Alfhariz</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #1a1a1a;
-            --secondary: #2c3e50;
             --accent: #e74c3c;
-            --bg-body: #f0f2f5;
-            --white: #ffffff;
-            --success: #00b894;
-            --warning: #fdcb6e;
-            --info: #0984e3;
-            --sidebar-width: 250px;
+            --bg-light: #f8f9fa;
+            --border: #e2e8f0;
+            --success: #2ecc71;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        body { background-color: var(--bg-light); color: #333; }
 
-        body {
-            background-color: var(--bg-body);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* --- SIDEBAR (Menu Kiri) --- */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--primary);
-            color: var(--white);
-            position: fixed;
-            height: 100%;
-            padding: 20px;
-            transition: 0.3s;
-            z-index: 100;
-        }
-
-        .brand {
-            font-size: 1.4rem;
-            font-weight: bold;
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--white);
-            text-decoration: none;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            color: #bdc3c7;
-            text-decoration: none;
-            margin-bottom: 5px;
-            border-radius: 8px;
-            transition: 0.3s;
-        }
-
-        .menu-item:hover, .menu-item.active {
-            background: rgba(255,255,255,0.1);
-            color: var(--white);
-            transform: translateX(5px);
-        }
-
-        .menu-item i { margin-right: 15px; width: 20px; }
-
-        /* --- MAIN CONTENT --- */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            padding: 2rem;
-            width: calc(100% - var(--sidebar-width));
-        }
-
+        /* --- HEADER SEDERHANA --- */
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
+            background: white; padding: 1rem 0; border-bottom: 1px solid #ddd;
+            text-align: center; position: sticky; top: 0; z-index: 10;
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; }
+
+        /* --- LAYOUT UTAMA --- */
+        .container {
+            max-width: 1200px; margin: 2rem auto; padding: 0 1rem;
+            display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;
         }
 
-        .user-admin {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--white);
-            padding: 8px 15px;
-            border-radius: 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
+        h2 { margin-bottom: 1.5rem; font-size: 1.2rem; border-bottom: 2px solid #eee; padding-bottom: 10px; }
 
-        /* --- DASHBOARD CARDS --- */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 2rem;
-        }
-
-        .card {
-            background: var(--white);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: transform 0.3s;
-        }
-
-        .card:hover { transform: translateY(-5px); }
-
-        .card-info h3 { font-size: 2rem; margin-bottom: 5px; color: var(--primary); }
-        .card-info p { color: #7f8c8d; font-size: 0.9rem; }
+        /* --- KIRI: FORMULIR --- */
+        .form-section { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         
-        .icon-box {
-            width: 50px; height: 50px;
-            border-radius: 12px;
-            display: flex; 
-            align-items: center; justify-content: center;
-            font-size: 1.5rem;
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        input, select, textarea {
+            width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px;
+            transition: 0.3s; font-size: 1rem;
         }
-        .bg-money { background: rgba(0, 184, 148, 0.1); color: var(--success); }
-        .bg-order { background: rgba(9, 132, 227, 0.1); color: var(--info); }
-        .bg-pending { background: rgba(253, 203, 110, 0.1); color: #d35400; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(0,0,0,0.1); }
 
-        /* --- TABLE SECTION --- */
-        .table-container {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            animation: slideUp 0.8s ease;
+        /* Pilihan Kurir & Pembayaran (Card Style) */
+        .radio-group { display: grid; gap: 10px; }
+        .radio-card {
+            border: 1px solid var(--border); padding: 15px; border-radius: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: 0.2s; position: relative;
         }
-
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .search-box input {
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            width: 250px;
-            outline: none;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th { text-align: left; padding: 15px; color: #7f8c8d; font-weight: 600; border-bottom: 2px solid #f0f2f5; }
-        td { padding: 15px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
+        .radio-card:hover { background: #f9f9f9; }
+        .radio-card.selected { border-color: var(--primary); background: rgba(0,0,0,0.02); }
+        .radio-card input { display: none; } /* Hide default radio */
         
-        tr { transition: background 0.2s; }
-        tr:hover { background-color: #f8f9fa; }
+        .check-icon { color: var(--primary); display: none; }
+        .radio-card.selected .check-icon { display: block; }
 
-        /* Badges */
-        .badge { padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: 600; }
-        .b-pending { background: rgba(253, 203, 110, 0.2); color: #d35400; }
-        .b-process { background: rgba(9, 132, 227, 0.2); color: var(--info); }
-        .b-success { background: rgba(0, 184, 148, 0.2); color: var(--success); }
-
-        /* Actions */
-        .action-btn {
-            border: none;
-            background: none;
-            cursor: pointer;
-            padding: 5px;
-            font-size: 1.1rem;
-            transition: 0.2s;
-        }
-        .btn-edit { color: var(--info); }
-        .btn-delete { color: var(--accent); }
-        .action-btn:hover { transform: scale(1.2); }
-
-        /* --- MODAL EDIT --- */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(3px);
+        /* --- KANAN: RINGKASAN ORDER --- */
+        .order-summary {
+            background: white; padding: 2rem; border-radius: 12px; height: fit-content;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: sticky; top: 100px;
         }
 
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            width: 400px;
-            animation: zoomIn 0.3s;
+        .product-item { display: flex; gap: 15px; margin-bottom: 1.5rem; align-items: center; }
+        .product-img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; background: #eee; }
+        
+        .price-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: #666; font-size: 0.95rem; }
+        .total-row { display: flex; justify-content: space-between; margin-top: 1rem; padding-top: 1rem; border-top: 2px dashed #eee; font-weight: bold; font-size: 1.2rem; color: var(--primary); }
+
+        .btn-checkout {
+            width: 100%; background: var(--primary); color: white; padding: 15px;
+            border: none; border-radius: 8px; font-size: 1rem; font-weight: bold;
+            cursor: pointer; margin-top: 1.5rem; transition: 0.3s;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
         }
+        .btn-checkout:hover { background: #333; transform: translateY(-2px); }
 
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
-        .form-group select, .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+        /* Voucher Input */
+        .voucher-box { display: flex; gap: 10px; margin-bottom: 1rem; }
+        .btn-apply { background: #eee; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: 600; }
 
-        .btn-save {
-            width: 100%;
-            padding: 10px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
+        /* --- OVERLAY LOADING & SUCCESS --- */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9); z-index: 100;
+            display: none; justify-content: center; align-items: center; flex-direction: column;
         }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid #eee; border-top: 5px solid var(--primary);
+            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .success-box {
+            text-align: center; animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .success-icon { font-size: 4rem; color: var(--success); margin-bottom: 1rem; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .sidebar { width: 70px; padding: 20px 10px; }
-            .brand span, .menu-item span { display: none; }
-            .main-content { margin-left: 70px; width: calc(100% - 70px); }
-            .menu-item i { margin-right: 0; font-size: 1.5rem; }
-            .search-box input { width: 100%; }
+            .container { grid-template-columns: 1fr; }
+            .order-summary { order: -1; position: static; } /* Ringkasan pindah ke atas di HP */
         }
     </style>
 </head>
 <body>
 
-    <nav class="sidebar">
-        <a href="#" class="brand">
-            <i class="fas fa-shoe-prints"></i>
-            <span>Alfhariz Admin</span>
-        </a>
-        <div class="menu">
-            <a href="#" class="menu-item"><i class="fas fa-home"></i> <span>Dashboard</span></a>
-            <a href="#" class="menu-item active"><i class="fas fa-shopping-cart"></i> <span>Transaksi</span></a>
-            <a href="#" class="menu-item"><i class="fas fa-box"></i> <span>Produk</span></a>
-            <a href="#" class="menu-item"><i class="fas fa-users"></i> <span>Pelanggan</span></a>
-            <a href="#" class="menu-item" style="margin-top: 50px; color: #e74c3c;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
-        </div>
-    </nav>
+    <header>
+        <a href="index.html" class="logo">Toko Sepatu Alfhariz</a>
+    </header>
 
-    <main class="main-content">
-        <header>
-            <div>
-                <h2 style="color: var(--primary);">Manajemen Pesanan</h2>
-                <p style="color: #7f8c8d;">Kelola semua transaksi yang masuk di sini.</p>
-            </div>
-            <div class="user-admin">
-                <img src="https://ui-avatars.com/api/?name=Admin+Alfhariz" style="border-radius: 50%; width: 35px;">
-                <span>Halo, <b>Owner</b></span>
-            </div>
-        </header>
-
-        <div class="stats-grid">
-            <div class="card">
-                <div class="card-info">
-                    <h3 id="totalRevenue">Rp 0</h3>
-                    <p>Total Pemasukan</p>
-                </div>
-                <div class="icon-box bg-money"><i class="fas fa-wallet"></i></div>
-            </div>
-            <div class="card">
-                <div class="card-info">
-                    <h3 id="totalOrders">0</h3>
-                    <p>Total Pesanan</p>
-                </div>
-                <div class="icon-box bg-order"><i class="fas fa-shopping-bag"></i></div>
-            </div>
-            <div class="card">
-                <div class="card-info">
-                    <h3 id="pendingOrders">0</h3>
-                    <p>Perlu Diproses</p>
-                </div>
-                <div class="icon-box bg-pending"><i class="fas fa-clock"></i></div>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <div class="table-header">
-                <h3>Daftar Transaksi Terbaru</h3>
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Cari nama pembeli..." onkeyup="searchTable()">
-                </div>
-            </div>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID Order</th>
-                            <th>Pembeli</th>
-                            <th>Produk</th>
-                            <th>Tanggal</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
-                <h3>Update Status Pesanan</h3>
-                <span onclick="closeModal()" style="cursor:pointer; font-size:1.5rem;">&times;</span>
-            </div>
-            <form id="editForm" onsubmit="saveStatus(event)">
-                <input type="hidden" id="editId">
+    <div class="container">
+        <div class="form-section">
+            <h2><i class="fas fa-map-marker-alt"></i> Alamat Pengiriman</h2>
+            <form id="checkoutForm">
                 <div class="form-group">
-                    <label>Nama Pembeli</label>
-                    <input type="text" id="editName" disabled style="background: #eee;">
+                    <label>Nama Lengkap</label>
+                    <input type="text" placeholder="Contoh: Alfhariz Sanjaya" required>
                 </div>
                 <div class="form-group">
-                    <label>Status Pesanan</label>
-                    <select id="editStatus">
-                        <option value="pending">Pending (Belum Bayar)</option>
-                        <option value="process">Dikemas / Dikirim</option>
-                        <option value="success">Selesai</option>
-                    </select>
+                    <label>Nomor WhatsApp</label>
+                    <input type="tel" placeholder="08xxxxxxxxxx" required>
                 </div>
-                <button type="submit" class="btn-save">Simpan Perubahan</button>
+                <div class="form-group">
+                    <label>Alamat Lengkap</label>
+                    <textarea rows="3" placeholder="Nama Jalan, No Rumah, Kecamatan, Kota..." required></textarea>
+                </div>
+
+                <br>
+                <h2><i class="fas fa-truck"></i> Pilih Kurir</h2>
+                <div class="radio-group">
+                    <label class="radio-card selected" onclick="selectCourier(20000, this)">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <i class="fas fa-shipping-fast"></i>
+                            <div><b>JNE Reguler</b><br><small>Estimasi 2-3 Hari</small></div>
+                        </div>
+                        <b>Rp 20.000</b>
+                        <i class="fas fa-check-circle check-icon"></i>
+                        <input type="radio" name="kurir" checked>
+                    </label>
+
+                    <label class="radio-card" onclick="selectCourier(35000, this)">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <i class="fas fa-bolt"></i>
+                            <div><b>SiCepat BEST</b><br><small>Besok Sampai</small></div>
+                        </div>
+                        <b>Rp 35.000</b>
+                        <i class="fas fa-check-circle check-icon"></i>
+                        <input type="radio" name="kurir">
+                    </label>
+                </div>
+
+                <br>
+                <h2><i class="fas fa-credit-card"></i> Metode Pembayaran</h2>
+                <div class="radio-group">
+                    <label class="radio-card selected" onclick="selectPayment(this)">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <i class="fas fa-university"></i> <b>Transfer Bank (BCA/Mandiri)</b>
+                        </div>
+                        <i class="fas fa-check-circle check-icon"></i>
+                    </label>
+                    <label class="radio-card" onclick="selectPayment(this)">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <i class="fas fa-wallet"></i> <b>E-Wallet (Dana/OVO)</b>
+                        </div>
+                        <i class="fas fa-check-circle check-icon"></i>
+                    </label>
+                    <label class="radio-card" onclick="selectPayment(this)">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <i class="fas fa-hand-holding-usd"></i> <b>COD (Bayar di Tempat)</b>
+                        </div>
+                        <i class="fas fa-check-circle check-icon"></i>
+                    </label>
+                </div>
             </form>
+        </div>
+
+        <div class="order-summary">
+            <h2>Ringkasan Pesanan</h2>
+            <div class="product-item">
+                <img src="adidas-samba.jpg" alt="Sepatu" class="product-img" onerror="this.src='https://via.placeholder.com/70'">
+                <div>
+                    <h4 style="margin-bottom:5px;">Adidas Samba OG</h4>
+                    <p style="color:#666; font-size:0.9rem;">Size: 42 | Warna: Putih</p>
+                </div>
+            </div>
+
+            <div class="voucher-box">
+                <input type="text" id="voucherInput" placeholder="Punya kode promo?">
+                <button type="button" class="btn-apply" onclick="applyVoucher()">Pakai</button>
+            </div>
+            <p id="voucherMsg" style="font-size:0.8rem; margin-bottom:1rem;"></p>
+
+            <div class="price-row">
+                <span>Subtotal Produk</span>
+                <span id="subtotal">Rp 3.380.000</span>
+            </div>
+            <div class="price-row">
+                <span>Biaya Pengiriman</span>
+                <span id="shippingCost">Rp 20.000</span>
+            </div>
+            <div class="price-row" id="discountRow" style="display:none; color:var(--success);">
+                <span>Diskon</span>
+                <span id="discountVal">-Rp 0</span>
+            </div>
+
+            <div class="total-row">
+                <span>Total Bayar</span>
+                <span id="totalPrice">Rp 3.400.000</span>
+            </div>
+
+            <button class="btn-checkout" onclick="processCheckout()">
+                <i class="fas fa-lock"></i> Bayar Sekarang
+            </button>
+            <p style="text-align:center; font-size:0.8rem; color:#888; margin-top:10px;">
+                <i class="fas fa-shield-alt"></i> Transaksi Aman & Terenkripsi
+            </p>
+        </div>
+    </div>
+
+    <div class="overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <h3>Memproses Pesanan...</h3>
+        <p>Mohon jangan tutup halaman ini.</p>
+    </div>
+
+    <div class="overlay" id="successOverlay" style="display:none;">
+        <div class="success-box">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h2>Pembayaran Berhasil!</h2>
+            <p>Kode Pesanan: <b style="color:var(--primary);">ORD-2025-ALF</b></p>
+            <p style="margin: 10px 0 20px 0; color:#666;">Detail pesanan telah dikirim ke WhatsApp Anda.</p>
+            <button class="btn-checkout" style="width: auto; padding: 10px 30px;" onclick="window.location.href='transaksi.html'">Lihat Riwayat</button>
         </div>
     </div>
 
     <script>
-        // Data Dummy (Simulasi Database Toko)
-        let orders = [
-            { id: '#ORD-001', customer: 'Budi Santoso', product: 'Adidas Samba', date: '05 Feb 2026', price: 3380000, status: 'pending' },
-            { id: '#ORD-002', customer: 'Siti Aminah', product: 'Nike Air Force 1', date: '04 Feb 2026', price: 1520000, status: 'process' },
-            { id: '#ORD-003', customer: 'Ahmad Dani', product: 'GUCCI Sneakers', date: '01 Feb 2026', price: 93300000, status: 'success' },
-            { id: '#ORD-004', customer: 'Dewi Persik', product: 'Vans Old School', date: '01 Feb 2026', price: 1390000, status: 'success' },
-            { id: '#ORD-005', customer: 'Raffi Ahmad', product: 'Puma Sport', date: '05 Feb 2026', price: 2450000, status: 'pending' },
-        ];
+        // --- DATA PRODUK & VARIABEL ---
+        let productPrice = 3380000;
+        let shippingPrice = 20000;
+        let discount = 0;
+
+        const elSubtotal = document.getElementById('subtotal');
+        const elShipping = document.getElementById('shippingCost');
+        const elTotal = document.getElementById('totalPrice');
+        const elDiscountRow = document.getElementById('discountRow');
+        const elDiscountVal = document.getElementById('discountVal');
 
         // Format Rupiah
-        const formatRupiah = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
+        const formatIDR = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
-        // Render Table & Stats
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
+        // 1. UPDATE HARGA TOTAL
+        function updateSummary() {
+            elSubtotal.innerText = formatIDR(productPrice);
+            elShipping.innerText = formatIDR(shippingPrice);
             
-            let totalRev = 0;
-            let countPending = 0;
+            let total = productPrice + shippingPrice - discount;
+            elTotal.innerText = formatIDR(total);
+        }
 
-            orders.forEach((order, index) => {
-                // Hitung Statistik
-                if(order.status === 'success') totalRev += order.price;
-                if(order.status === 'pending') countPending++;
-
-                // Tentukan Warna Badge
-                let badgeClass = '';
-                let statusText = '';
-                if(order.status === 'pending') { badgeClass = 'b-pending'; statusText = 'Pending'; }
-                else if(order.status === 'process') { badgeClass = 'b-process'; statusText = 'Dikirim'; }
-                else { badgeClass = 'b-success'; statusText = 'Selesai'; }
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><b>${order.id}</b></td>
-                    <td>${order.customer}</td>
-                    <td>${order.product}</td>
-                    <td>${order.date}</td>
-                    <td>${formatRupiah(order.price)}</td>
-                    <td><span class="badge ${badgeClass}">${statusText}</span></td>
-                    <td>
-                        <button class="action-btn btn-edit" onclick="openModal('${order.id}')" title="Edit Status"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn btn-delete" onclick="deleteOrder('${order.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
+        // 2. PILIH KURIR (Klik Card)
+        function selectCourier(price, element) {
+            // Reset style card lain
+            document.querySelectorAll('.radio-group .radio-card').forEach(el => {
+                el.classList.remove('selected');
+                if(el.querySelector('input[name="kurir"]')) el.querySelector('input[name="kurir"]').checked = false;
             });
 
-            // Update Statistik Cards
-            document.getElementById('totalRevenue').innerText = formatRupiah(totalRev);
-            document.getElementById('totalOrders').innerText = orders.length;
-            document.getElementById('pendingOrders').innerText = countPending;
+            // Set style card terpilih
+            element.classList.add('selected');
+            element.querySelector('input').checked = true;
+
+            // Update harga
+            shippingPrice = price;
+            updateSummary();
         }
 
-        // Search Function
-        function searchTable() {
-            const input = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#tableBody tr');
+        // 3. PILIH PEMBAYARAN (Visual Only)
+        function selectPayment(element) {
+            // Logic visual selection untuk payment
+            const parent = element.parentElement;
+            parent.querySelectorAll('.radio-card').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // 4. FITUR VOUCHER
+        function applyVoucher() {
+            const code = document.getElementById('voucherInput').value.toUpperCase();
+            const msg = document.getElementById('voucherMsg');
+
+            if (code === 'ALFHARIZ') {
+                discount = 100000; // Diskon 100rb
+                elDiscountRow.style.display = 'flex';
+                elDiscountVal.innerText = '-' + formatIDR(discount);
+                msg.innerHTML = '<span style="color:green"><i class="fas fa-check"></i> Kode berhasil! Hemat Rp 100rb</span>';
+                updateSummary();
+            } else {
+                discount = 0;
+                elDiscountRow.style.display = 'none';
+                msg.innerHTML = '<span style="color:red"><i class="fas fa-times"></i> Kode tidak valid</span>';
+                updateSummary();
+            }
+        }
+
+        // 5. PROSES CHECKOUT (SIMULASI)
+        function processCheckout() {
+            // Validasi sederhana
+            const inputs = document.querySelectorAll('#checkoutForm input, #checkoutForm textarea');
+            let valid = true;
+            inputs.forEach(i => { if(i.value === '') valid = false; });
+
+            if(!valid) {
+                alert('Mohon lengkapi data pengiriman terlebih dahulu!');
+                return;
+            }
+
+            // Tampilkan Loading
+            const loading = document.getElementById('loadingOverlay');
+            const success = document.getElementById('successOverlay');
             
-            rows.forEach(row => {
-                const name = row.cells[1].innerText.toLowerCase();
-                const id = row.cells[0].innerText.toLowerCase();
-                if(name.includes(input) || id.includes(input)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+            loading.style.display = 'flex';
+
+            // Simulasi delay server (2 detik)
+            setTimeout(() => {
+                loading.style.display = 'none';
+                success.style.display = 'flex'; // Munculkan pop up sukses
+            }, 2500);
         }
 
-        // Delete Order
-        function deleteOrder(id) {
-            if(confirm('Yakin ingin menghapus pesanan ini?')) {
-                orders = orders.filter(o => o.id !== id);
-                renderTable();
-            }
-        }
-
-        // Modal Logic
-        const modal = document.getElementById('editModal');
-        let currentEditId = null;
-
-        function openModal(id) {
-            const order = orders.find(o => o.id === id);
-            if(order) {
-                currentEditId = id;
-                document.getElementById('editId').value = id;
-                document.getElementById('editName').value = order.customer;
-                document.getElementById('editStatus').value = order.status;
-                modal.style.display = 'flex';
-            }
-        }
-
-        function closeModal() {
-            modal.style.display = 'none';
-        }
-
-        function saveStatus(e) {
-            e.preventDefault();
-            const newStatus = document.getElementById('editStatus').value;
-            
-            const orderIndex = orders.findIndex(o => o.id === currentEditId);
-            if(orderIndex !== -1) {
-                orders[orderIndex].status = newStatus;
-                renderTable();
-                closeModal();
-                alert(`Status pesanan ${currentEditId} berhasil diupdate!`);
-            }
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
-
-        // Initial Load
-        renderTable();
+        // Init pertama kali
+        updateSummary();
     </script>
+
 </body>
 </html>
