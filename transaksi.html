@@ -3,397 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transaksi - Toko Sepatu Alfhariz</title>
+    <title>Admin Dashboard - Toko Sepatu Alfhariz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- CSS RESET & VARIABLES --- */
         :root {
             --primary: #1a1a1a;
-            --accent: #e74c3c; /* Warna merah/oranye untuk aksen */
-            --bg-light: #f4f7f6;
-            --text-dark: #333;
+            --secondary: #2c3e50;
+            --accent: #e74c3c;
+            --bg-body: #f0f2f5;
             --white: #ffffff;
-            --success: #2ecc71;
-            --warning: #f1c40f;
-            --info: #3498db;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --info: #0984e3;
+            --sidebar-width: 250px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         body {
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-        }
-
-        /* --- NAVBAR (Menyesuaikan website asli) --- */
-        header {
-            background-color: var(--primary);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        nav {
+            background-color: var(--bg-body);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
+            min-height: 100vh;
         }
 
-        .logo {
-            color: var(--white);
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            color: #ccc;
-            text-decoration: none;
-            transition: color 0.3s;
-            font-weight: 500;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--white);
-            text-shadow: 0 0 5px rgba(255,255,255,0.5);
-        }
-
-        /* --- MAIN CONTAINER --- */
-        .container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-            min-height: 80vh;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 2rem;
-            color: var(--primary);
-            animation: slideDown 0.8s ease;
-        }
-
-        /* --- FILTERS --- */
-        .filters {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            animation: fadeIn 1s ease;
-        }
-
-        .filter-btn {
-            background: var(--white);
-            border: 2px solid #ddd;
-            padding: 8px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-
-        .filter-btn:hover, .filter-btn.active {
-            background-color: var(--primary);
-            color: var(--white);
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        /* --- TRANSACTION LIST --- */
-        .transaction-list {
-            display: grid;
-            gap: 1.5rem;
-        }
-
-        /* CARD DESIGN */
-        .card {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            opacity: 0; /* Hidden for animation */
-            animation: fadeInUp 0.6s ease forwards;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 5px;
+        /* --- SIDEBAR (Menu Kiri) --- */
+        .sidebar {
+            width: var(--sidebar-width);
             background: var(--primary);
+            color: var(--white);
+            position: fixed;
+            height: 100%;
+            padding: 20px;
+            transition: 0.3s;
+            z-index: 100;
         }
 
-        .card-content {
+        .brand {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
             display: flex;
             align-items: center;
-            gap: 1.5rem;
-            flex: 1;
+            gap: 10px;
+            color: var(--white);
+            text-decoration: none;
         }
 
-        .product-img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-            background-color: #eee;
-        }
-
-        .info h3 {
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: #bdc3c7;
+            text-decoration: none;
             margin-bottom: 5px;
-            font-size: 1.1rem;
-        }
-
-        .info p {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 3px;
-        }
-
-        .price {
-            font-weight: bold;
-            color: var(--accent);
-            font-size: 1.1rem;
-        }
-
-        /* STATUS BADGES */
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-selesai { background: rgba(46, 204, 113, 0.15); color: var(--success); }
-        .status-proses { background: rgba(52, 152, 219, 0.15); color: var(--info); }
-        .status-pending { background: rgba(241, 196, 15, 0.15); color: #d35400; }
-
-        .action-btn {
-            margin-left: 1rem;
-            padding: 8px 16px;
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            border-radius: 6px;
-            cursor: pointer;
+            border-radius: 8px;
             transition: 0.3s;
         }
 
-        .action-btn:hover {
+        .menu-item:hover, .menu-item.active {
+            background: rgba(255,255,255,0.1);
+            color: var(--white);
+            transform: translateX(5px);
+        }
+
+        .menu-item i { margin-right: 15px; width: 20px; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .user-admin {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--white);
+            padding: 8px 15px;
+            border-radius: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* --- DASHBOARD CARDS --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s;
+        }
+
+        .card:hover { transform: translateY(-5px); }
+
+        .card-info h3 { font-size: 2rem; margin-bottom: 5px; color: var(--primary); }
+        .card-info p { color: #7f8c8d; font-size: 0.9rem; }
+        
+        .icon-box {
+            width: 50px; height: 50px;
+            border-radius: 12px;
+            display: flex; 
+            align-items: center; justify-content: center;
+            font-size: 1.5rem;
+        }
+        .bg-money { background: rgba(0, 184, 148, 0.1); color: var(--success); }
+        .bg-order { background: rgba(9, 132, 227, 0.1); color: var(--info); }
+        .bg-pending { background: rgba(253, 203, 110, 0.1); color: #d35400; }
+
+        /* --- TABLE SECTION --- */
+        .table-container {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            animation: slideUp 0.8s ease;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 250px;
+            outline: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th { text-align: left; padding: 15px; color: #7f8c8d; font-weight: 600; border-bottom: 2px solid #f0f2f5; }
+        td { padding: 15px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
+        
+        tr { transition: background 0.2s; }
+        tr:hover { background-color: #f8f9fa; }
+
+        /* Badges */
+        .badge { padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: 600; }
+        .b-pending { background: rgba(253, 203, 110, 0.2); color: #d35400; }
+        .b-process { background: rgba(9, 132, 227, 0.2); color: var(--info); }
+        .b-success { background: rgba(0, 184, 148, 0.2); color: var(--success); }
+
+        /* Actions */
+        .action-btn {
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+        .btn-edit { color: var(--info); }
+        .btn-delete { color: var(--accent); }
+        .action-btn:hover { transform: scale(1.2); }
+
+        /* --- MODAL EDIT --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 400px;
+            animation: zoomIn 0.3s;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
+        .form-group select, .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+
+        .btn-save {
+            width: 100%;
+            padding: 10px;
             background: var(--primary);
-            color: var(--white);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
         }
 
-        /* --- FOOTER --- */
-        footer {
-            background-color: var(--primary);
-            color: var(--white);
-            text-align: center;
-            padding: 1.5rem;
-            margin-top: 3rem;
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeInUp { 
-            from { transform: translateY(20px); opacity: 0; } 
-            to { transform: translateY(0); opacity: 1; } 
-        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .card { flex-direction: column; align-items: flex-start; gap: 1rem; }
-            .card-content { width: 100%; }
-            .action-btn { width: 100%; text-align: center; margin-left: 0; }
-            .status-badge { position: absolute; top: 1rem; right: 1rem; }
+            .sidebar { width: 70px; padding: 20px 10px; }
+            .brand span, .menu-item span { display: none; }
+            .main-content { margin-left: 70px; width: calc(100% - 70px); }
+            .menu-item i { margin-right: 0; font-size: 1.5rem; }
+            .search-box input { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <nav>
-            <a href="index.html" class="logo">Toko Sepatu Alfhariz</a>
-            <div class="nav-links">
-                <a href="index.html">Beranda</a>
-                <a href="transaksi.html" class="active">Transaksi</a>
-                <a href="tentang.html">Tentang</a>
+    <nav class="sidebar">
+        <a href="#" class="brand">
+            <i class="fas fa-shoe-prints"></i>
+            <span>Alfhariz Admin</span>
+        </a>
+        <div class="menu">
+            <a href="#" class="menu-item"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+            <a href="#" class="menu-item active"><i class="fas fa-shopping-cart"></i> <span>Transaksi</span></a>
+            <a href="#" class="menu-item"><i class="fas fa-box"></i> <span>Produk</span></a>
+            <a href="#" class="menu-item"><i class="fas fa-users"></i> <span>Pelanggan</span></a>
+            <a href="#" class="menu-item" style="margin-top: 50px; color: #e74c3c;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <div>
+                <h2 style="color: var(--primary);">Manajemen Pesanan</h2>
+                <p style="color: #7f8c8d;">Kelola semua transaksi yang masuk di sini.</p>
             </div>
-        </nav>
-    </header>
+            <div class="user-admin">
+                <img src="https://ui-avatars.com/api/?name=Admin+Alfhariz" style="border-radius: 50%; width: 35px;">
+                <span>Halo, <b>Owner</b></span>
+            </div>
+        </header>
 
-    <div class="container">
-        <h1>Riwayat Transaksi</h1>
-
-        <div class="filters">
-            <button class="filter-btn active" onclick="filterData('all')">Semua</button>
-            <button class="filter-btn" onclick="filterData('pending')">Belum Bayar</button>
-            <button class="filter-btn" onclick="filterData('proses')">Dikemas/Dikirim</button>
-            <button class="filter-btn" onclick="filterData('selesai')">Selesai</button>
+        <div class="stats-grid">
+            <div class="card">
+                <div class="card-info">
+                    <h3 id="totalRevenue">Rp 0</h3>
+                    <p>Total Pemasukan</p>
+                </div>
+                <div class="icon-box bg-money"><i class="fas fa-wallet"></i></div>
+            </div>
+            <div class="card">
+                <div class="card-info">
+                    <h3 id="totalOrders">0</h3>
+                    <p>Total Pesanan</p>
+                </div>
+                <div class="icon-box bg-order"><i class="fas fa-shopping-bag"></i></div>
+            </div>
+            <div class="card">
+                <div class="card-info">
+                    <h3 id="pendingOrders">0</h3>
+                    <p>Perlu Diproses</p>
+                </div>
+                <div class="icon-box bg-pending"><i class="fas fa-clock"></i></div>
+            </div>
         </div>
 
-        <div id="transactionList" class="transaction-list">
+        <div class="table-container">
+            <div class="table-header">
+                <h3>Daftar Transaksi Terbaru</h3>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Cari nama pembeli..." onkeyup="searchTable()">
+                </div>
             </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Order</th>
+                            <th>Pembeli</th>
+                            <th>Produk</th>
+                            <th>Tanggal</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+                <h3>Update Status Pesanan</h3>
+                <span onclick="closeModal()" style="cursor:pointer; font-size:1.5rem;">&times;</span>
+            </div>
+            <form id="editForm" onsubmit="saveStatus(event)">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label>Nama Pembeli</label>
+                    <input type="text" id="editName" disabled style="background: #eee;">
+                </div>
+                <div class="form-group">
+                    <label>Status Pesanan</label>
+                    <select id="editStatus">
+                        <option value="pending">Pending (Belum Bayar)</option>
+                        <option value="process">Dikemas / Dikirim</option>
+                        <option value="success">Selesai</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-save">Simpan Perubahan</button>
+            </form>
+        </div>
     </div>
 
-    <footer>
-        <p>&copy; 2025 Toko Sepatu Alfhariz. All Rights Reserved.</p>
-    </footer>
-
     <script>
-        // Data Dummy Transaksi (Sesuai produk di website Anda)
-        const transactions = [
-            {
-                id: 'TRX-8821',
-                product: 'Adidas Samba',
-                date: '5 Feb 2026',
-                price: 3380000,
-                status: 'pending', // pending, proses, selesai
-                image: 'adidas-samba.jpg' // Pastikan nama file gambar sesuai
-            },
-            {
-                id: 'TRX-7734',
-                product: 'Nike Air Force 1',
-                date: '2 Feb 2026',
-                price: 1520000,
-                status: 'proses',
-                image: 'nike-air-force1.jpg'
-            },
-            {
-                id: 'TRX-1029',
-                product: 'GUCCI Sneakers',
-                date: '25 Jan 2026',
-                price: 93300000,
-                status: 'selesai',
-                image: 'gucci.jpg'
-            },
-            {
-                id: 'TRX-5541',
-                product: 'Vans Old School',
-                date: '10 Jan 2026',
-                price: 1390000,
-                status: 'selesai',
-                image: 'vans-old-school.jpg'
-            }
+        // Data Dummy (Simulasi Database Toko)
+        let orders = [
+            { id: '#ORD-001', customer: 'Budi Santoso', product: 'Adidas Samba', date: '05 Feb 2026', price: 3380000, status: 'pending' },
+            { id: '#ORD-002', customer: 'Siti Aminah', product: 'Nike Air Force 1', date: '04 Feb 2026', price: 1520000, status: 'process' },
+            { id: '#ORD-003', customer: 'Ahmad Dani', product: 'GUCCI Sneakers', date: '01 Feb 2026', price: 93300000, status: 'success' },
+            { id: '#ORD-004', customer: 'Dewi Persik', product: 'Vans Old School', date: '01 Feb 2026', price: 1390000, status: 'success' },
+            { id: '#ORD-005', customer: 'Raffi Ahmad', product: 'Puma Sport', date: '05 Feb 2026', price: 2450000, status: 'pending' },
         ];
 
-        const listContainer = document.getElementById('transactionList');
-        const filterButtons = document.querySelectorAll('.filter-btn');
+        // Format Rupiah
+        const formatRupiah = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
-        // Fungsi Format Rupiah
-        const formatRupiah = (number) => {
-            return new Intl.NumberFormat('id-ID', { 
-                style: 'currency', 
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(number);
-        };
-
-        // Fungsi Render Data
-        function renderTransactions(filter = 'all') {
-            listContainer.innerHTML = '';
+        // Render Table & Stats
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
             
-            const filteredData = filter === 'all' 
-                ? transactions 
-                : transactions.filter(t => t.status === filter);
+            let totalRev = 0;
+            let countPending = 0;
 
-            if (filteredData.length === 0) {
-                listContainer.innerHTML = `
-                    <div style="text-align:center; padding: 2rem; color: #888;">
-                        <h3>Tidak ada transaksi ditemukan</h3>
-                        <p>Belum ada riwayat untuk status ini.</p>
-                    </div>`;
-                return;
-            }
+            orders.forEach((order, index) => {
+                // Hitung Statistik
+                if(order.status === 'success') totalRev += order.price;
+                if(order.status === 'pending') countPending++;
 
-            filteredData.forEach((item, index) => {
-                // Tentukan Label Status & Warna
-                let statusLabel = '';
-                let statusClass = '';
-                let actionButton = '';
+                // Tentukan Warna Badge
+                let badgeClass = '';
+                let statusText = '';
+                if(order.status === 'pending') { badgeClass = 'b-pending'; statusText = 'Pending'; }
+                else if(order.status === 'process') { badgeClass = 'b-process'; statusText = 'Dikirim'; }
+                else { badgeClass = 'b-success'; statusText = 'Selesai'; }
 
-                if(item.status === 'selesai') {
-                    statusLabel = 'Selesai';
-                    statusClass = 'status-selesai';
-                    actionButton = '<button class="action-btn" onclick="alert(\'Beli Lagi?\')">Beli Lagi</button>';
-                } else if(item.status === 'proses') {
-                    statusLabel = 'Sedang Dikirim';
-                    statusClass = 'status-proses';
-                    actionButton = '<button class="action-btn" onclick="alert(\'Lacak Paket...\')">Lacak</button>';
-                } else {
-                    statusLabel = 'Belum Bayar';
-                    statusClass = 'status-pending';
-                    actionButton = '<button class="action-btn" style="background:var(--accent); color:white; border:none;" onclick="alert(\'Menuju halaman pembayaran...\')">Bayar</button>';
-                }
-
-                // Buat HTML Card
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.style.animationDelay = `${index * 0.1}s`; // Staggered animation
-                
-                // Gunakan placeholder jika gambar tidak ada (error handling)
-                const imgSrc = item.image ? item.image : 'https://via.placeholder.com/80?text=Sepatu';
-
-                card.innerHTML = `
-                    <div class="card-content">
-                        <img src="${imgSrc}" alt="${item.product}" class="product-img" onerror="this.src='https://via.placeholder.com/80?text=Sepatu'">
-                        <div class="info">
-                            <h3>${item.product}</h3>
-                            <p>ID: ${item.id} • ${item.date}</p>
-                            <div class="price">${formatRupiah(item.price)}</div>
-                        </div>
-                    </div>
-                    <div style="display:flex; flex-direction:column; align-items:end; gap:10px;">
-                        <span class="status-badge ${statusClass}">${statusLabel}</span>
-                        ${actionButton}
-                    </div>
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${order.id}</b></td>
+                    <td>${order.customer}</td>
+                    <td>${order.product}</td>
+                    <td>${order.date}</td>
+                    <td>${formatRupiah(order.price)}</td>
+                    <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                    <td>
+                        <button class="action-btn btn-edit" onclick="openModal('${order.id}')" title="Edit Status"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-delete" onclick="deleteOrder('${order.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                    </td>
                 `;
-                listContainer.appendChild(card);
+                tbody.appendChild(tr);
+            });
+
+            // Update Statistik Cards
+            document.getElementById('totalRevenue').innerText = formatRupiah(totalRev);
+            document.getElementById('totalOrders').innerText = orders.length;
+            document.getElementById('pendingOrders').innerText = countPending;
+        }
+
+        // Search Function
+        function searchTable() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#tableBody tr');
+            
+            rows.forEach(row => {
+                const name = row.cells[1].innerText.toLowerCase();
+                const id = row.cells[0].innerText.toLowerCase();
+                if(name.includes(input) || id.includes(input)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             });
         }
 
-        // Fungsi Filter
-        function filterData(status) {
-            // Update active button class
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            // Re-render
-            renderTransactions(status);
+        // Delete Order
+        function deleteOrder(id) {
+            if(confirm('Yakin ingin menghapus pesanan ini?')) {
+                orders = orders.filter(o => o.id !== id);
+                renderTable();
+            }
         }
 
-        // Initial Render
-        renderTransactions();
+        // Modal Logic
+        const modal = document.getElementById('editModal');
+        let currentEditId = null;
+
+        function openModal(id) {
+            const order = orders.find(o => o.id === id);
+            if(order) {
+                currentEditId = id;
+                document.getElementById('editId').value = id;
+                document.getElementById('editName').value = order.customer;
+                document.getElementById('editStatus').value = order.status;
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        function saveStatus(e) {
+            e.preventDefault();
+            const newStatus = document.getElementById('editStatus').value;
+            
+            const orderIndex = orders.findIndex(o => o.id === currentEditId);
+            if(orderIndex !== -1) {
+                orders[orderIndex].status = newStatus;
+                renderTable();
+                closeModal();
+                alert(`Status pesanan ${currentEditId} berhasil diupdate!`);
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Initial Load
+        renderTable();
     </script>
 </body>
 </html>
