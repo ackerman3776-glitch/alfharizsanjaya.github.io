@@ -3,338 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Toko Sepatu Alfhariz</title>
+    <title>Riwayat Belanja - Alfhariz Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #1a1a1a;
-            --accent: #e74c3c;
-            --bg-light: #f8f9fa;
-            --border: #e2e8f0;
-            --success: #2ecc71;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        /* Menggunakan style yang sama dengan Beranda */
+        :root { --primary: #1a1a1a; --accent: #e74c3c; --bg-light: #f4f7f6; }
+        body { background: var(--bg-light); font-family: 'Segoe UI', sans-serif; margin: 0; }
         
-        body { background-color: var(--bg-light); color: #333; }
+        header { background: var(--primary); padding: 1rem 2rem; }
+        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
+        .logo { color: white; font-weight: bold; text-decoration: none; font-size: 1.5rem; }
+        .nav-links a { color: #ccc; text-decoration: none; margin-left: 20px; }
+        .nav-links a.active { color: white; font-weight: bold; }
 
-        /* --- HEADER SEDERHANA --- */
-        header {
-            background: white; padding: 1rem 0; border-bottom: 1px solid #ddd;
-            text-align: center; position: sticky; top: 0; z-index: 10;
+        .container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+        h2 { text-align: center; color: var(--primary); margin-bottom: 2rem; }
+
+        /* LIST CARD STYLE */
+        .trx-card {
+            background: white; padding: 1.5rem; border-radius: 10px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            animation: fadeIn 0.5s ease;
         }
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; }
-
-        /* --- LAYOUT UTAMA --- */
-        .container {
-            max-width: 1200px; margin: 2rem auto; padding: 0 1rem;
-            display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;
-        }
-
-        h2 { margin-bottom: 1.5rem; font-size: 1.2rem; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-
-        /* --- KIRI: FORMULIR --- */
-        .form-section { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .trx-info { display: flex; align-items: center; gap: 15px; }
+        .trx-img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; background: #eee; }
         
-        .form-group { margin-bottom: 1.2rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
-        input, select, textarea {
-            width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px;
-            transition: 0.3s; font-size: 1rem;
+        .status-badge {
+            padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;
         }
-        input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(0,0,0,0.1); }
+        .st-dikemas { background: #fff3cd; color: #856404; } /* Kuning */
+        .st-selesai { background: #d4edda; color: #155724; } /* Hijau */
 
-        /* Pilihan Kurir & Pembayaran (Card Style) */
-        .radio-group { display: grid; gap: 10px; }
-        .radio-card {
-            border: 1px solid var(--border); padding: 15px; border-radius: 8px;
-            display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer; transition: 0.2s; position: relative;
-        }
-        .radio-card:hover { background: #f9f9f9; }
-        .radio-card.selected { border-color: var(--primary); background: rgba(0,0,0,0.02); }
-        .radio-card input { display: none; } /* Hide default radio */
+        @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
         
-        .check-icon { color: var(--primary); display: none; }
-        .radio-card.selected .check-icon { display: block; }
-
-        /* --- KANAN: RINGKASAN ORDER --- */
-        .order-summary {
-            background: white; padding: 2rem; border-radius: 12px; height: fit-content;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: sticky; top: 100px;
-        }
-
-        .product-item { display: flex; gap: 15px; margin-bottom: 1.5rem; align-items: center; }
-        .product-img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; background: #eee; }
-        
-        .price-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: #666; font-size: 0.95rem; }
-        .total-row { display: flex; justify-content: space-between; margin-top: 1rem; padding-top: 1rem; border-top: 2px dashed #eee; font-weight: bold; font-size: 1.2rem; color: var(--primary); }
-
-        .btn-checkout {
-            width: 100%; background: var(--primary); color: white; padding: 15px;
-            border: none; border-radius: 8px; font-size: 1rem; font-weight: bold;
-            cursor: pointer; margin-top: 1.5rem; transition: 0.3s;
-            display: flex; justify-content: center; align-items: center; gap: 10px;
-        }
-        .btn-checkout:hover { background: #333; transform: translateY(-2px); }
-
-        /* Voucher Input */
-        .voucher-box { display: flex; gap: 10px; margin-bottom: 1rem; }
-        .btn-apply { background: #eee; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: 600; }
-
-        /* --- OVERLAY LOADING & SUCCESS --- */
-        .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9); z-index: 100;
-            display: none; justify-content: center; align-items: center; flex-direction: column;
-        }
-        .spinner {
-            width: 50px; height: 50px; border: 5px solid #eee; border-top: 5px solid var(--primary);
-            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .success-box {
-            text-align: center; animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        .success-icon { font-size: 4rem; color: var(--success); margin-bottom: 1rem; }
-
-        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container { grid-template-columns: 1fr; }
-            .order-summary { order: -1; position: static; } /* Ringkasan pindah ke atas di HP */
-        }
+        /* Tombol Hapus Riwayat (Opsional) */
+        .btn-clear { display: block; margin: 20px auto; background: none; border: 1px solid #ccc; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+        .btn-clear:hover { background: #eee; }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo">Toko Sepatu Alfhariz</a>
+        <nav>
+            <a href="index.html" class="logo">Alfhariz Store</a>
+            <div class="nav-links">
+                <a href="index.html">Beranda</a>
+                <a href="transaksi.html" class="active">Riwayat</a>
+                <a href="tentang.html">Tentang</a>
+            </div>
+        </nav>
     </header>
 
     <div class="container">
-        <div class="form-section">
-            <h2><i class="fas fa-map-marker-alt"></i> Alamat Pengiriman</h2>
-            <form id="checkoutForm">
-                <div class="form-group">
-                    <label>Nama Lengkap</label>
-                    <input type="text" placeholder="Contoh: Alfhariz Sanjaya" required>
-                </div>
-                <div class="form-group">
-                    <label>Nomor WhatsApp</label>
-                    <input type="tel" placeholder="08xxxxxxxxxx" required>
-                </div>
-                <div class="form-group">
-                    <label>Alamat Lengkap</label>
-                    <textarea rows="3" placeholder="Nama Jalan, No Rumah, Kecamatan, Kota..." required></textarea>
-                </div>
-
-                <br>
-                <h2><i class="fas fa-truck"></i> Pilih Kurir</h2>
-                <div class="radio-group">
-                    <label class="radio-card selected" onclick="selectCourier(20000, this)">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <i class="fas fa-shipping-fast"></i>
-                            <div><b>JNE Reguler</b><br><small>Estimasi 2-3 Hari</small></div>
-                        </div>
-                        <b>Rp 20.000</b>
-                        <i class="fas fa-check-circle check-icon"></i>
-                        <input type="radio" name="kurir" checked>
-                    </label>
-
-                    <label class="radio-card" onclick="selectCourier(35000, this)">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <i class="fas fa-bolt"></i>
-                            <div><b>SiCepat BEST</b><br><small>Besok Sampai</small></div>
-                        </div>
-                        <b>Rp 35.000</b>
-                        <i class="fas fa-check-circle check-icon"></i>
-                        <input type="radio" name="kurir">
-                    </label>
-                </div>
-
-                <br>
-                <h2><i class="fas fa-credit-card"></i> Metode Pembayaran</h2>
-                <div class="radio-group">
-                    <label class="radio-card selected" onclick="selectPayment(this)">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <i class="fas fa-university"></i> <b>Transfer Bank (BCA/Mandiri)</b>
-                        </div>
-                        <i class="fas fa-check-circle check-icon"></i>
-                    </label>
-                    <label class="radio-card" onclick="selectPayment(this)">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <i class="fas fa-wallet"></i> <b>E-Wallet (Dana/OVO)</b>
-                        </div>
-                        <i class="fas fa-check-circle check-icon"></i>
-                    </label>
-                    <label class="radio-card" onclick="selectPayment(this)">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <i class="fas fa-hand-holding-usd"></i> <b>COD (Bayar di Tempat)</b>
-                        </div>
-                        <i class="fas fa-check-circle check-icon"></i>
-                    </label>
-                </div>
-            </form>
-        </div>
-
-        <div class="order-summary">
-            <h2>Ringkasan Pesanan</h2>
-            <div class="product-item">
-                <img src="adidas-samba.jpg" alt="Sepatu" class="product-img" onerror="this.src='https://via.placeholder.com/70'">
-                <div>
-                    <h4 style="margin-bottom:5px;">Adidas Samba OG</h4>
-                    <p style="color:#666; font-size:0.9rem;">Size: 42 | Warna: Putih</p>
-                </div>
+        <h2>Riwayat Pesanan Saya</h2>
+        <div id="trxList">
             </div>
 
-            <div class="voucher-box">
-                <input type="text" id="voucherInput" placeholder="Punya kode promo?">
-                <button type="button" class="btn-apply" onclick="applyVoucher()">Pakai</button>
-            </div>
-            <p id="voucherMsg" style="font-size:0.8rem; margin-bottom:1rem;"></p>
-
-            <div class="price-row">
-                <span>Subtotal Produk</span>
-                <span id="subtotal">Rp 3.380.000</span>
-            </div>
-            <div class="price-row">
-                <span>Biaya Pengiriman</span>
-                <span id="shippingCost">Rp 20.000</span>
-            </div>
-            <div class="price-row" id="discountRow" style="display:none; color:var(--success);">
-                <span>Diskon</span>
-                <span id="discountVal">-Rp 0</span>
-            </div>
-
-            <div class="total-row">
-                <span>Total Bayar</span>
-                <span id="totalPrice">Rp 3.400.000</span>
-            </div>
-
-            <button class="btn-checkout" onclick="processCheckout()">
-                <i class="fas fa-lock"></i> Bayar Sekarang
-            </button>
-            <p style="text-align:center; font-size:0.8rem; color:#888; margin-top:10px;">
-                <i class="fas fa-shield-alt"></i> Transaksi Aman & Terenkripsi
-            </p>
-        </div>
-    </div>
-
-    <div class="overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-        <h3>Memproses Pesanan...</h3>
-        <p>Mohon jangan tutup halaman ini.</p>
-    </div>
-
-    <div class="overlay" id="successOverlay" style="display:none;">
-        <div class="success-box">
-            <i class="fas fa-check-circle success-icon"></i>
-            <h2>Pembayaran Berhasil!</h2>
-            <p>Kode Pesanan: <b style="color:var(--primary);">ORD-2025-ALF</b></p>
-            <p style="margin: 10px 0 20px 0; color:#666;">Detail pesanan telah dikirim ke WhatsApp Anda.</p>
-            <button class="btn-checkout" style="width: auto; padding: 10px 30px;" onclick="window.location.href='transaksi.html'">Lihat Riwayat</button>
-        </div>
+        <button class="btn-clear" onclick="hapusRiwayat()">Hapus Semua Riwayat</button>
     </div>
 
     <script>
-        // --- DATA PRODUK & VARIABEL ---
-        let productPrice = 3380000;
-        let shippingPrice = 20000;
-        let discount = 0;
+        const listContainer = document.getElementById('trxList');
+        const fmt = (n) => new Intl.NumberFormat('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:0}).format(n);
 
-        const elSubtotal = document.getElementById('subtotal');
-        const elShipping = document.getElementById('shippingCost');
-        const elTotal = document.getElementById('totalPrice');
-        const elDiscountRow = document.getElementById('discountRow');
-        const elDiscountVal = document.getElementById('discountVal');
+        function loadRiwayat() {
+            // AMBIL DATA DARI LOCALSTORAGE
+            let history = JSON.parse(localStorage.getItem('riwayatBelanja')) || [];
 
-        // Format Rupiah
-        const formatIDR = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
-
-        // 1. UPDATE HARGA TOTAL
-        function updateSummary() {
-            elSubtotal.innerText = formatIDR(productPrice);
-            elShipping.innerText = formatIDR(shippingPrice);
-            
-            let total = productPrice + shippingPrice - discount;
-            elTotal.innerText = formatIDR(total);
-        }
-
-        // 2. PILIH KURIR (Klik Card)
-        function selectCourier(price, element) {
-            // Reset style card lain
-            document.querySelectorAll('.radio-group .radio-card').forEach(el => {
-                el.classList.remove('selected');
-                if(el.querySelector('input[name="kurir"]')) el.querySelector('input[name="kurir"]').checked = false;
-            });
-
-            // Set style card terpilih
-            element.classList.add('selected');
-            element.querySelector('input').checked = true;
-
-            // Update harga
-            shippingPrice = price;
-            updateSummary();
-        }
-
-        // 3. PILIH PEMBAYARAN (Visual Only)
-        function selectPayment(element) {
-            // Logic visual selection untuk payment
-            const parent = element.parentElement;
-            parent.querySelectorAll('.radio-card').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-        }
-
-        // 4. FITUR VOUCHER
-        function applyVoucher() {
-            const code = document.getElementById('voucherInput').value.toUpperCase();
-            const msg = document.getElementById('voucherMsg');
-
-            if (code === 'ALFHARIZ') {
-                discount = 100000; // Diskon 100rb
-                elDiscountRow.style.display = 'flex';
-                elDiscountVal.innerText = '-' + formatIDR(discount);
-                msg.innerHTML = '<span style="color:green"><i class="fas fa-check"></i> Kode berhasil! Hemat Rp 100rb</span>';
-                updateSummary();
-            } else {
-                discount = 0;
-                elDiscountRow.style.display = 'none';
-                msg.innerHTML = '<span style="color:red"><i class="fas fa-times"></i> Kode tidak valid</span>';
-                updateSummary();
-            }
-        }
-
-        // 5. PROSES CHECKOUT (SIMULASI)
-        function processCheckout() {
-            // Validasi sederhana
-            const inputs = document.querySelectorAll('#checkoutForm input, #checkoutForm textarea');
-            let valid = true;
-            inputs.forEach(i => { if(i.value === '') valid = false; });
-
-            if(!valid) {
-                alert('Mohon lengkapi data pengiriman terlebih dahulu!');
+            if (history.length === 0) {
+                listContainer.innerHTML = '<p style="text-align:center; color:#888;">Belum ada transaksi.</p>';
                 return;
             }
 
-            // Tampilkan Loading
-            const loading = document.getElementById('loadingOverlay');
-            const success = document.getElementById('successOverlay');
-            
-            loading.style.display = 'flex';
-
-            // Simulasi delay server (2 detik)
-            setTimeout(() => {
-                loading.style.display = 'none';
-                success.style.display = 'flex'; // Munculkan pop up sukses
-            }, 2500);
+            // Render HTML terbalik (yang baru di atas)
+            listContainer.innerHTML = '';
+            history.reverse().forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'trx-card';
+                card.innerHTML = `
+                    <div class="trx-info">
+                        <img src="${item.img}" class="trx-img" onerror="this.src='https://via.placeholder.com/70'">
+                        <div>
+                            <h4 style="margin:0;">${item.product}</h4>
+                            <small style="color:#666;">${item.date} • ${item.id}</small>
+                            <div style="font-weight:bold; color:#e74c3c; margin-top:5px;">${fmt(item.price)}</div>
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <span class="status-badge st-dikemas">${item.status}</span>
+                        <br><br>
+                        <a href="#" style="font-size:0.8rem; color:#1a1a1a;">Lacak Paket</a>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
         }
 
-        // Init pertama kali
-        updateSummary();
-    </script>
+        function hapusRiwayat() {
+            if(confirm('Hapus semua riwayat belanja?')) {
+                localStorage.removeItem('riwayatBelanja');
+                loadRiwayat();
+            }
+        }
 
+        // Jalankan saat halaman dibuka
+        loadRiwayat();
+    </script>
 </body>
 </html>
