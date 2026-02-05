@@ -3,457 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Toko Sepatu Alfhariz</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Transaksi - Toko Sepatu Alfhariz</title>
     <style>
-        /* CSS RESET & GENERAL */
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
-        
-        /* LAYOUT UTAMA */
-        .checkout-container {
-            display: flex;
-            flex-wrap: wrap;
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-            gap: 30px;
+        /* --- CSS RESET & VARIABLES --- */
+        :root {
+            --primary: #1a1a1a;
+            --accent: #e74c3c; /* Warna merah/oranye untuk aksen */
+            --bg-light: #f4f7f6;
+            --text-dark: #333;
+            --white: #ffffff;
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --info: #3498db;
         }
 
-        .left-column { flex: 2; min-width: 300px; }
-        .right-column { flex: 1; min-width: 300px; }
-
-        /* KARTU PUTIH */
-        .card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-
-        .card h3 { margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-
-        /* FORM STYLING */
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
-        
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border 0.3s;
+        * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        input:focus, select:focus, textarea:focus { border-color: #27ae60; outline: none; }
 
-        /* RINGKASAN PESANAN (STICKY) */
-        .summary-box {
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        /* --- NAVBAR (Menyesuaikan website asli) --- */
+        header {
+            background-color: var(--primary);
+            padding: 1rem 2rem;
             position: sticky;
-            top: 20px;
-        }
-
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            color: #666;
-        }
-
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px dashed #eee;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #27ae60;
-        }
-
-        /* TOMBOL BELI */
-        .btn-checkout {
-            width: 100%;
-            padding: 15px;
-            background: #27ae60;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 20px;
-        }
-        .btn-checkout:hover { background: #219150; }
-
-        /* --- MODAL PEMBAYARAN (POPUP) --- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.7);
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .modal.show { opacity: 1; }
 
-        .modal-content {
-            background-color: white;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 15px;
-            overflow: hidden;
-            transform: translateY(20px);
-            transition: transform 0.3s;
-        }
-        .modal.show .modal-content { transform: translateY(0); }
-
-        .modal-header {
-            background: #27ae60;
-            color: white;
-            padding: 15px 20px;
-            font-weight: bold;
+        nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .close-modal { cursor: pointer; font-size: 24px; }
-
-        .modal-body { padding: 20px; }
-
-        /* PILIHAN PEMBAYARAN */
-        .payment-option {
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .payment-option:hover, .payment-option.active {
-            border-color: #27ae60;
-            background-color: #f0fdf4;
-        }
-        .payment-logo { font-size: 24px; color: #555; width: 30px; text-align: center; }
-
-        /* DETAIL REKENING (Hidden by default) */
-        .payment-details {
-            display: none;
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border-left: 4px solid #27ae60;
-        }
-        .copy-btn {
-            background: #ddd;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-left: 10px;
-        }
-
-        .btn-confirm {
-            width: 100%;
-            background: #25D366; /* WA Color */
-            color: white;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
+        .logo {
+            color: var(--white);
+            font-size: 1.5rem;
             font-weight: bold;
-            font-size: 16px;
-            margin-top: 20px;
-            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .nav-links {
             display: flex;
-            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--white);
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            min-height: 80vh;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            animation: slideDown 0.8s ease;
+        }
+
+        /* --- FILTERS --- */
+        .filters {
+            display: flex;
             justify-content: center;
             gap: 10px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            animation: fadeIn 1s ease;
         }
-        
+
+        .filter-btn {
+            background: var(--white);
+            border: 2px solid #ddd;
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* --- TRANSACTION LIST --- */
+        .transaction-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        /* CARD DESIGN */
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; /* Hidden for animation */
+            animation: fadeInUp 0.6s ease forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: var(--primary);
+        }
+
+        .card-content {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex: 1;
+        }
+
+        .product-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            background-color: #eee;
+        }
+
+        .info h3 {
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .info p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+
+        .price {
+            font-weight: bold;
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+
+        /* STATUS BADGES */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-selesai { background: rgba(46, 204, 113, 0.15); color: var(--success); }
+        .status-proses { background: rgba(52, 152, 219, 0.15); color: var(--info); }
+        .status-pending { background: rgba(241, 196, 15, 0.15); color: #d35400; }
+
+        .action-btn {
+            margin-left: 1rem;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: var(--primary);
+            color: var(--white);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeInUp { 
+            from { transform: translateY(20px); opacity: 0; } 
+            to { transform: translateY(0); opacity: 1; } 
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .card-content { width: 100%; }
+            .action-btn { width: 100%; text-align: center; margin-left: 0; }
+            .status-badge { position: absolute; top: 1rem; right: 1rem; }
+        }
     </style>
 </head>
 <body>
 
-    <nav style="background: #333; padding: 15px; text-align: center;">
-        <a href="index.html" style="color: white; margin: 0 15px; text-decoration: none;">Beranda</a>
-        <a href="transaksi.html" style="color: #ff6b6b; margin: 0 15px; text-decoration: none; font-weight: bold;">Transaksi</a>
-        <a href="tentang.html" style="color: white; margin: 0 15px; text-decoration: none;">Tentang</a>
-    </nav>
-
-    <div class="checkout-container">
-        <div class="left-column">
-            <div class="card">
-                <h3><i class="fas fa-user-circle"></i> Informasi Pengiriman</h3>
-                <form id="checkoutForm">
-                    <div class="form-group">
-                        <label>Nama Lengkap</label>
-                        <input type="text" id="nama" placeholder="Masukan nama penerima" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Nomor WhatsApp (Aktif)</label>
-                        <input type="tel" id="no_hp" placeholder="Contoh: 081234567890" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Alamat Lengkap</label>
-                        <textarea id="alamat" rows="3" placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota" required></textarea>
-                    </div>
-                </form>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">Toko Sepatu Alfhariz</a>
+            <div class="nav-links">
+                <a href="index.html">Beranda</a>
+                <a href="transaksi.html" class="active">Transaksi</a>
+                <a href="tentang.html">Tentang</a>
             </div>
+        </nav>
+    </header>
 
-            <div class="card">
-                <h3><i class="fas fa-shopping-bag"></i> Detail Produk</h3>
-                <div class="form-group">
-                    <label>Pilih Model Sepatu</label>
-                    <select id="produk" onchange="updateHarga()">
-                        <option value="" data-harga="0">-- Pilih Produk --</option>
-                        <option value="Puma Sport" data-harga="2450000">Puma Sport - Rp 2.450.000</option>
-                        <option value="Adidas Samba" data-harga="3380000">Adidas Samba - Rp 3.380.000</option>
-                        <option value="Nike Air Force 1" data-harga="1520000">Nike Air Force 1 - Rp 1.520.000</option>
-                        <option value="Converse" data-harga="2410000">Converse - Rp 2.410.000</option>
-                        <option value="New Balance" data-harga="4600000">New Balance - Rp 4.600.000</option>
-                        <option value="GUCCI Luxury" data-harga="93300000">GUCCI Luxury - Rp 93.300.000</option>
-                    </select>
-                </div>
-                <div class="row" style="display: flex; gap: 20px;">
-                    <div class="form-group" style="flex: 1;">
-                        <label>Ukuran</label>
-                        <select id="ukuran">
-                            <option value="39">39</option>
-                            <option value="40">40</option>
-                            <option value="41">41</option>
-                            <option value="42">42</option>
-                            <option value="43">43</option>
-                            <option value="44">44</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Jumlah</label>
-                        <input type="number" id="jumlah" value="1" min="1" onchange="updateHarga()" onkeyup="updateHarga()">
-                    </div>
-                </div>
-            </div>
+    <div class="container">
+        <h1>Riwayat Transaksi</h1>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterData('all')">Semua</button>
+            <button class="filter-btn" onclick="filterData('pending')">Belum Bayar</button>
+            <button class="filter-btn" onclick="filterData('proses')">Dikemas/Dikirim</button>
+            <button class="filter-btn" onclick="filterData('selesai')">Selesai</button>
         </div>
 
-        <div class="right-column">
-            <div class="card summary-box">
-                <h3>Ringkasan Belanja</h3>
-                <div class="price-row">
-                    <span>Harga Barang</span>
-                    <span id="display-harga">Rp 0</span>
-                </div>
-                <div class="price-row">
-                    <span>Biaya Layanan</span>
-                    <span>Rp 2.000</span>
-                </div>
-                <div class="price-row">
-                    <span>Ongkos Kirim</span>
-                    <span style="color: #27ae60;">Gratis</span>
-                </div>
-                <div class="total-row">
-                    <span>Total Tagihan</span>
-                    <span id="display-total">Rp 0</span>
-                </div>
-
-                <button type="button" class="btn-checkout" onclick="bukaModalPembayaran()">
-                    Pilih Pembayaran <i class="fas fa-arrow-right"></i>
-                </button>
-                <p style="font-size: 12px; color: #888; text-align: center; margin-top: 10px;">
-                    <i class="fas fa-shield-alt"></i> Transaksi Aman & Terpercaya
-                </p>
+        <div id="transactionList" class="transaction-list">
             </div>
-        </div>
     </div>
 
-    <div id="paymentModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>Pilih Metode Pembayaran</span>
-                <span class="close-modal" onclick="tutupModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p style="margin-bottom: 15px;">Silakan pilih metode pembayaran untuk menyelesaikan pesanan:</p>
-                
-                <div class="payment-option" onclick="pilihMetode(this, 'bank')">
-                    <i class="fas fa-university payment-logo"></i>
-                    <div>
-                        <strong>Transfer Bank (BCA/BRI/Mandiri)</strong><br>
-                        <small>Verifikasi Manual</small>
-                    </div>
-                </div>
-
-                <div class="payment-option" onclick="pilihMetode(this, 'ewallet')">
-                    <i class="fas fa-wallet payment-logo"></i>
-                    <div>
-                        <strong>E-Wallet (Dana/OVO/Gopay)</strong><br>
-                        <small>Scan QR Code</small>
-                    </div>
-                </div>
-
-                <div class="payment-option" onclick="pilihMetode(this, 'cod')">
-                    <i class="fas fa-hand-holding-usd payment-logo"></i>
-                    <div>
-                        <strong>COD (Bayar di Tempat)</strong><br>
-                        <small>Bayar saat kurir datang</small>
-                    </div>
-                </div>
-
-                <div id="payment-details" class="payment-details">
-                    <p id="detail-text"></p>
-                </div>
-
-                <button id="btn-final" class="btn-confirm" onclick="kirimPesanan()" style="display: none;">
-                    <i class="fab fa-whatsapp"></i> Konfirmasi Pesanan Saya
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <footer style="text-align: center; padding: 20px; color: #999; font-size: 14px;">
-        &copy; 2025 Toko Sepatu Alfhariz
+    <footer>
+        <p>&copy; 2025 Toko Sepatu Alfhariz. All Rights Reserved.</p>
     </footer>
 
     <script>
-        let totalHargaGlobal = 0;
-        let metodeBayarGlobal = "";
+        // Data Dummy Transaksi (Sesuai produk di website Anda)
+        const transactions = [
+            {
+                id: 'TRX-8821',
+                product: 'Adidas Samba',
+                date: '5 Feb 2026',
+                price: 3380000,
+                status: 'pending', // pending, proses, selesai
+                image: 'adidas-samba.jpg' // Pastikan nama file gambar sesuai
+            },
+            {
+                id: 'TRX-7734',
+                product: 'Nike Air Force 1',
+                date: '2 Feb 2026',
+                price: 1520000,
+                status: 'proses',
+                image: 'nike-air-force1.jpg'
+            },
+            {
+                id: 'TRX-1029',
+                product: 'GUCCI Sneakers',
+                date: '25 Jan 2026',
+                price: 93300000,
+                status: 'selesai',
+                image: 'gucci.jpg'
+            },
+            {
+                id: 'TRX-5541',
+                product: 'Vans Old School',
+                date: '10 Jan 2026',
+                price: 1390000,
+                status: 'selesai',
+                image: 'vans-old-school.jpg'
+            }
+        ];
 
-        // 1. FORMAT RUPIAH
-        const formatRupiah = (num) => {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
-        }
+        const listContainer = document.getElementById('transactionList');
+        const filterButtons = document.querySelectorAll('.filter-btn');
 
-        // 2. HITUNG OTOMATIS (Live Calculation)
-        function updateHarga() {
-            const selectProduk = document.getElementById('produk');
-            const inputJumlah = document.getElementById('jumlah');
+        // Fungsi Format Rupiah
+        const formatRupiah = (number) => {
+            return new Intl.NumberFormat('id-ID', { 
+                style: 'currency', 
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number);
+        };
+
+        // Fungsi Render Data
+        function renderTransactions(filter = 'all') {
+            listContainer.innerHTML = '';
             
-            const hargaSatuan = parseFloat(selectProduk.options[selectProduk.selectedIndex].getAttribute('data-harga')) || 0;
-            const jumlah = parseInt(inputJumlah.value) || 1;
-            
-            const subtotal = hargaSatuan * jumlah;
-            const biayaLayanan = 2000;
-            const total = subtotal + biayaLayanan;
+            const filteredData = filter === 'all' 
+                ? transactions 
+                : transactions.filter(t => t.status === filter);
 
-            // Simpan ke variabel global
-            totalHargaGlobal = total;
-
-            // Update Tampilan
-            document.getElementById('display-harga').innerText = formatRupiah(subtotal);
-            document.getElementById('display-total').innerText = (subtotal > 0) ? formatRupiah(total) : "Rp 0";
-        }
-
-        // 3. BUKA MODAL PEMBAYARAN
-        function bukaModalPembayaran() {
-            // Validasi dulu
-            const nama = document.getElementById('nama').value;
-            const alamat = document.getElementById('alamat').value;
-            const produk = document.getElementById('produk').value;
-
-            if(nama === "" || alamat === "" || produk === "") {
-                alert("Harap lengkapi semua data form terlebih dahulu!");
+            if (filteredData.length === 0) {
+                listContainer.innerHTML = `
+                    <div style="text-align:center; padding: 2rem; color: #888;">
+                        <h3>Tidak ada transaksi ditemukan</h3>
+                        <p>Belum ada riwayat untuk status ini.</p>
+                    </div>`;
                 return;
             }
 
-            // Tampilkan Modal
-            const modal = document.getElementById('paymentModal');
-            modal.style.display = "flex";
-            setTimeout(() => { modal.classList.add('show'); }, 10); // Efek fade in
+            filteredData.forEach((item, index) => {
+                // Tentukan Label Status & Warna
+                let statusLabel = '';
+                let statusClass = '';
+                let actionButton = '';
+
+                if(item.status === 'selesai') {
+                    statusLabel = 'Selesai';
+                    statusClass = 'status-selesai';
+                    actionButton = '<button class="action-btn" onclick="alert(\'Beli Lagi?\')">Beli Lagi</button>';
+                } else if(item.status === 'proses') {
+                    statusLabel = 'Sedang Dikirim';
+                    statusClass = 'status-proses';
+                    actionButton = '<button class="action-btn" onclick="alert(\'Lacak Paket...\')">Lacak</button>';
+                } else {
+                    statusLabel = 'Belum Bayar';
+                    statusClass = 'status-pending';
+                    actionButton = '<button class="action-btn" style="background:var(--accent); color:white; border:none;" onclick="alert(\'Menuju halaman pembayaran...\')">Bayar</button>';
+                }
+
+                // Buat HTML Card
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.animationDelay = `${index * 0.1}s`; // Staggered animation
+                
+                // Gunakan placeholder jika gambar tidak ada (error handling)
+                const imgSrc = item.image ? item.image : 'https://via.placeholder.com/80?text=Sepatu';
+
+                card.innerHTML = `
+                    <div class="card-content">
+                        <img src="${imgSrc}" alt="${item.product}" class="product-img" onerror="this.src='https://via.placeholder.com/80?text=Sepatu'">
+                        <div class="info">
+                            <h3>${item.product}</h3>
+                            <p>ID: ${item.id} • ${item.date}</p>
+                            <div class="price">${formatRupiah(item.price)}</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:end; gap:10px;">
+                        <span class="status-badge ${statusClass}">${statusLabel}</span>
+                        ${actionButton}
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
         }
 
-        // 4. TUTUP MODAL
-        function tutupModal() {
-            const modal = document.getElementById('paymentModal');
-            modal.classList.remove('show');
-            setTimeout(() => { modal.style.display = "none"; }, 300);
-        }
-
-        // 5. LOGIKA PILIH METODE BAYAR
-        function pilihMetode(element, tipe) {
-            // Reset style pilihan lain
-            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('active'));
-            // Highlight pilihan ini
-            element.classList.add('active');
-
-            const detailBox = document.getElementById('payment-details');
-            const detailText = document.getElementById('detail-text');
-            const btnFinal = document.getElementById('btn-final');
-
-            detailBox.style.display = "block";
-            btnFinal.style.display = "flex";
-            metodeBayarGlobal = tipe;
-
-            // Tampilkan instruksi sesuai pilihan
-            if (tipe === 'bank') {
-                detailText.innerHTML = `
-                    <strong>Silakan transfer ke salah satu rekening:</strong><br><br>
-                    🏦 <strong>BCA:</strong> 123-456-7890 (a.n Alfhariz)<br>
-                    🏦 <strong>BRI:</strong> 0000-01-0000-50-5 (a.n Alfhariz)<br><br>
-                    <em>*Simpan bukti transfer untuk dikirim ke Admin.</em>
-                `;
-            } else if (tipe === 'ewallet') {
-                detailText.innerHTML = `
-                    <strong>Transfer E-Wallet:</strong><br><br>
-                    📱 <strong>DANA/OVO/Gopay:</strong> 0812-3456-7890<br><br>
-                    <em>*Sertakan nama pengirim di berita transfer.</em>
-                `;
-            } else if (tipe === 'cod') {
-                detailText.innerHTML = `
-                    <strong>Bayar di Tempat (COD)</strong><br>
-                    Mohon siapkan uang pas sebesar <strong>${formatRupiah(totalHargaGlobal)}</strong> saat kurir tiba.<br>
-                    Pastikan nomor WA aktif agar kurir bisa menghubungi.
-                `;
-            }
-        }
-
-        // 6. EKSEKUSI AKHIR (KIRIM KE WA)
-        function kirimPesanan() {
-            const nama = document.getElementById('nama').value;
-            const produk = document.getElementById('produk').value;
-            const ukuran = document.getElementById('ukuran').value;
-            const jumlah = document.getElementById('jumlah').value;
-            const alamat = document.getElementById('alamat').value;
+        // Fungsi Filter
+        function filterData(status) {
+            // Update active button class
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
             
-            // Tentukan label metode
-            let labelMetode = "";
-            if(metodeBayarGlobal === 'bank') labelMetode = "Transfer Bank";
-            else if(metodeBayarGlobal === 'ewallet') labelMetode = "E-Wallet";
-            else labelMetode = "COD (Bayar Ditempat)";
-
-            // GANTI NOMOR ADMIN DI SINI (Gunakan format 62...)
-            const nomorAdmin = "6281234567890"; 
-
-            const pesan = Halo Admin, saya ingin konfirmasi pesanan baru:%0A%0A +
-                          📦 *DETAIL PESANAN* %0A +
-                          Produk: ${produk} %0A +
-                          Ukuran: ${ukuran} %0A +
-                          Jumlah: ${jumlah} Pasang %0A +
-                          ----------------------------------%0A +
-                          👤 *DATA PEMBELI* %0A +
-                          Nama: ${nama} %0A +
-                          Alamat: ${alamat} %0A +
-                          ----------------------------------%0A +
-                          💰 *PEMBAYARAN* %0A +
-                          Total Tagihan: ${formatRupiah(totalHargaGlobal)} %0A +
-                          Metode: ${labelMetode} %0A +
-                          ----------------------------------%0A +
-                          Mohon diproses segera. Terima kasih!;
-            
-            // Buka WhatsApp
-            window.open(https://wa.me/${nomorAdmin}?text=${pesan}, '_blank');
+            // Re-render
+            renderTransactions(status);
         }
+
+        // Initial Render
+        renderTransactions();
     </script>
 </body>
 </html>
